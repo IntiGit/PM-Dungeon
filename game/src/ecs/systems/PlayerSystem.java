@@ -64,11 +64,6 @@ public class PlayerSystem extends ECS_System {
         return new MissingComponentException("VelocityComponent");
     }
 
-    /**
-     *
-     * @param ksd
-     * @param pSkillID
-     */
     private void executeSkill(KSData ksd, int pSkillID) {
         SkillComponent heroSC = (SkillComponent) ksd.e.getComponent(SkillComponent.class).orElseThrow();
         Set<Skill> heroSkills = heroSC.getSkillSet();

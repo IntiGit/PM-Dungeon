@@ -90,6 +90,11 @@ public class Hero extends Entity implements ILevelUp {
     }
 
     @Override
+    /**
+     * Level Up verhalten des Helden
+     * Erhöht die maximalen Lebenspunkte des Helden
+     * Bei Level 5 bzw. 10 werden neue Skills freigeschaltet
+     */
     public void onLevelUp(long nexLevel) {
         System.out.println("Levelaustieg zu Level " + nexLevel);
         HealthComponent myHC = (HealthComponent) this.getComponent(HealthComponent.class).orElseThrow();

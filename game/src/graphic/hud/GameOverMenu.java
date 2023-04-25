@@ -10,6 +10,10 @@ import ecs.entities.Entity;
 import tools.Constants;
 import tools.Point;
 
+/**
+ * Visuelle Darstellung des Game Over Screens
+ * @param <T>
+ */
 public class GameOverMenu<T extends Actor> extends ScreenController<T> implements IOnDeathFunction {
 
     /** Creates a new PauseMenu with a new Spritebatch */
@@ -63,6 +67,10 @@ public class GameOverMenu<T extends Actor> extends ScreenController<T> implement
         this.forEach((Actor s) -> s.setVisible(false));
     }
 
+    /**
+     * Stirbt der Held wird das Menü angezeigt
+     * @param entity Entity that has died
+     */
     @Override
     public void onDeath(Entity entity) {
         showMenu();
