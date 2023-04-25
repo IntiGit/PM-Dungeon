@@ -18,7 +18,6 @@ public class PlayableComponent extends Component {
 
     private Skill skillSlot1;
     private Skill skillSlot2;
-
     /**
      * @param entity associated entity
      * @param skillSlot1 skill that will be on the first skillslot
@@ -42,11 +41,11 @@ public class PlayableComponent extends Component {
      */
     public boolean isPlayable() {
         playableCompLogger.log(
-                CustomLogLevel.DEBUG,
-                "Checking if entity '"
-                        + entity.getClass().getSimpleName()
-                        + "' is playable: "
-                        + playable);
+            CustomLogLevel.DEBUG,
+            "Checking if entity '"
+                + entity.getClass().getSimpleName()
+                + "' is playable: "
+                + playable);
         return playable;
     }
 

@@ -1,28 +1,37 @@
 package ecs.entities;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import dslToGame.AnimationBuilder;
 import ecs.components.*;
 import ecs.components.AnimationComponent;
+import ecs.components.OnHeroDeath;
 import ecs.components.PositionComponent;
 import ecs.components.VelocityComponent;
 import ecs.components.skill.*;
+import ecs.components.xp.ILevelUp;
+import ecs.components.xp.XPComponent;
 import graphic.Animation;
+import graphic.hud.PauseMenu;
+import starter.Game;
+
+import java.util.List;
 
 /**
  * The Hero is the player character. It's entity in the ECS. This class helps to setup the hero with
  * all its components and attributes .
  */
-public class Hero extends Entity {
+public class Hero extends Entity implements ILevelUp {
 
     private final int fireballCoolDown = 5;
-    private final float xSpeed = 0.3f;
-    private final float ySpeed = 0.3f;
+    private final int healCoolDown = 30;
+    private final int speedCoolDown = 1;
+    private final float xSpeed = 0.2f;
+    private final float ySpeed = 0.2f;
 
     private final String pathToIdleLeft = "knight/idleLeft";
     private final String pathToIdleRight = "knight/idleRight";
     private final String pathToRunLeft = "knight/runLeft";
     private final String pathToRunRight = "knight/runRight";
-    private Skill firstSkill;
 
     /** Entity with Components */
     public Hero() {
@@ -31,9 +40,18 @@ public class Hero extends Entity {
         setupVelocityComponent();
         setupAnimationComponent();
         setupHitboxComponent();
-        PlayableComponent pc = new PlayableComponent(this);
-        setupFireballSkill();
-        pc.setSkillSlot1(firstSkill);
+        setupSkillComponent();
+        new PlayableComponent(this);
+        setupHealthComponent();
+        setupXPComponent();
+    }
+
+    private void setupSkillComponent() {
+        SkillComponent sc = new SkillComponent(this);
+        sc.addSkill(new Skill(
+            new FireballSkill(SkillTools::getCursorPositionAsPoint), fireballCoolDown,1));
+
+
     }
 
     private void setupVelocityComponent() {
@@ -48,16 +66,53 @@ public class Hero extends Entity {
         new AnimationComponent(this, idleLeft, idleRight);
     }
 
-    private void setupFireballSkill() {
-        firstSkill =
-                new Skill(
-                        new FireballSkill(SkillTools::getCursorPositionAsPoint), fireballCoolDown);
-    }
-
     private void setupHitboxComponent() {
         new HitboxComponent(
-                this,
-                (you, other, direction) -> System.out.println("heroCollisionEnter"),
-                (you, other, direction) -> System.out.println("heroCollisionLeave"));
+            this,
+            (you, other, direction) -> System.out.println("heroCollisionEnter"),
+            (you, other, direction) -> System.out.println("heroCollisionLeave"));
+    }
+
+    private void setupHealthComponent() {
+        HealthComponent hc = new HealthComponent(
+            this,
+            10,
+            new OnHeroDeath(),
+            new Animation(List.of("knight_m_hit_anim_f0.png"),300),
+            new Animation(List.of("knight_m_hit_anim_f0.png"),300));
+
+        hc.setCurrentHealthpoints(hc.getMaximalHealthpoints());
+    }
+
+    private void setupXPComponent() {
+        new XPComponent(this,this);
+
+    }
+
+    @Override
+    public void onLevelUp(long nexLevel) {
+        System.out.println("Levelaustieg zu Level " + nexLevel);
+        HealthComponent myHC = (HealthComponent) this.getComponent(HealthComponent.class).orElseThrow();
+        int bonus = nexLevel % 5 == 0 ? 1 : 0;
+        myHC.setMaximalHealthpoints(myHC.getMaximalHealthpoints() + bonus + 1);
+
+        if(nexLevel == 5) {
+            SkillComponent mySC = (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
+            mySC.addSkill(new Skill(new HealingSkill(), healCoolDown,2));
+            System.out.println("Heilungszauber freigeschaltet: " + "\n" +
+                "Heilt dich um 30% bis 50% deiner maximalen Leben" + "\n" +
+                "Cooldown: " + healCoolDown + "\n" +
+                "Kosten: Keine" + "\n" +
+                "Taste: 2");
+        } else if(nexLevel == 10) {
+            SkillComponent mySC = (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
+            mySC.addSkill(new Skill(new SpeedSkill(3), speedCoolDown, 3));
+
+            System.out.println("Geschwindigkeitszauber freigeschaltet: " + "\n" +
+                "Erhoeht oder verringert deine Geschwindigkeit zufaellig" + "\n" +
+                "Cooldown: " + healCoolDown + "\n" +
+                "Kosten: 3 Lebenspunkte" + "\n" +
+                "Taste: 3");
+        }
     }
 }

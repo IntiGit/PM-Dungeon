@@ -12,8 +12,10 @@ import configuration.Configuration;
 import configuration.KeyboardConfig;
 import controller.AbstractController;
 import controller.SystemController;
+import graphic.hud.GameOverMenu;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
+import ecs.components.xp.XPComponent;
 import ecs.entities.Entity;
 import ecs.entities.Hero;
 import ecs.systems.*;
@@ -37,7 +39,7 @@ import tools.Point;
 /** The heart of the framework. From here all strings are pulled. */
 public class Game extends ScreenAdapter implements IOnLevelLoader {
 
-    private final LevelSize LEVELSIZE = LevelSize.SMALL;
+    private final LevelSize LEVELSIZE = LevelSize.MEDIUM;
 
     /**
      * The batch is necessary to draw ALL the stuff. Every object that uses draw need to know the
@@ -58,6 +60,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private boolean doSetup = true;
     private static boolean paused = false;
+    private static boolean playerDied = false;
 
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
@@ -71,6 +74,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     public static ILevel currentLevel;
     private static PauseMenu<Actor> pauseMenu;
+    private static GameOverMenu<Actor> gameover;
     private static Entity hero;
     private Logger gameLogger;
 
@@ -114,7 +118,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         systems = new SystemController();
         controller.add(systems);
         pauseMenu = new PauseMenu<>();
+        gameover = new GameOverMenu<>();
         controller.add(pauseMenu);
+        controller.add(gameover);
         hero = new Hero();
         levelAPI = new LevelAPI(batch, painter, new WallGenerator(new RandomWalkGenerator()), this);
         levelAPI.loadLevel(LEVELSIZE);
@@ -127,6 +133,15 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         manageEntitiesSets();
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
+        if (playerDied && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+            System.exit(0);
+        }
+        if(playerDied && Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            playerDied = false;
+            gameover.hideMenu();
+            setHero(new Hero());
+            levelAPI.loadLevel(LEVELSIZE);
+        }
     }
 
     @Override
@@ -134,6 +149,11 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         currentLevel = levelAPI.getCurrentLevel();
         entities.clear();
         getHero().ifPresent(this::placeOnLevelStart);
+
+        XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
+        heroXPCom.addXP(50);
+        System.out.println("XP: " + heroXPCom.getCurrentXP());
+        System.out.println("LVL: " + heroXPCom.getCurrentLevel());
     }
 
     private void manageEntitiesSets() {
@@ -152,14 +172,14 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private void setCameraFocus() {
         if (getHero().isPresent()) {
             PositionComponent pc =
-                    (PositionComponent)
-                            getHero()
-                                    .get()
-                                    .getComponent(PositionComponent.class)
-                                    .orElseThrow(
-                                            () ->
-                                                    new MissingComponentException(
-                                                            "PositionComponent"));
+                (PositionComponent)
+                    getHero()
+                        .get()
+                        .getComponent(PositionComponent.class)
+                        .orElseThrow(
+                            () ->
+                                new MissingComponentException(
+                                    "PositionComponent"));
             camera.setFocusPoint(pc.getPosition());
 
         } else camera.setFocusPoint(new Point(0, 0));
@@ -171,10 +191,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private boolean isOnEndTile(Entity entity) {
         PositionComponent pc =
-                (PositionComponent)
-                        entity.getComponent(PositionComponent.class)
-                                .orElseThrow(
-                                        () -> new MissingComponentException("PositionComponent"));
+            (PositionComponent)
+                entity.getComponent(PositionComponent.class)
+                    .orElseThrow(
+                        () -> new MissingComponentException("PositionComponent"));
         Tile currentTile = currentLevel.getTileAt(pc.getPosition().toCoordinate());
         return currentTile.equals(currentLevel.getEndTile());
     }
@@ -182,10 +202,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private void placeOnLevelStart(Entity hero) {
         entities.add(hero);
         PositionComponent pc =
-                (PositionComponent)
-                        hero.getComponent(PositionComponent.class)
-                                .orElseThrow(
-                                        () -> new MissingComponentException("PositionComponent"));
+            (PositionComponent)
+                hero.getComponent(PositionComponent.class)
+                    .orElseThrow(
+                        () -> new MissingComponentException("PositionComponent"));
         pc.setPosition(currentLevel.getStartTile().getCoordinate().toPoint());
     }
 
@@ -199,6 +219,11 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             if (paused) pauseMenu.showMenu();
             else pauseMenu.hideMenu();
         }
+    }
+
+    public static void activateGameOver() {
+        gameover.showMenu();
+        playerDied = true;
     }
 
     /**
