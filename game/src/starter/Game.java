@@ -12,15 +12,22 @@ import configuration.Configuration;
 import configuration.KeyboardConfig;
 import controller.AbstractController;
 import controller.SystemController;
-import graphic.hud.GameOverMenu;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.xp.XPComponent;
 import ecs.entities.Entity;
+import ecs.entities.Geist;
+import ecs.entities.Grabstein;
 import ecs.entities.Hero;
+import ecs.entities.monsters.Daemon;
+import ecs.entities.monsters.Necromancer;
+import ecs.entities.monsters.Skelett;
+import ecs.entities.traps.Loch;
+import ecs.entities.traps.Schleim;
 import ecs.systems.*;
 import graphic.DungeonCamera;
 import graphic.Painter;
+import graphic.hud.GameOverMenu;
 import graphic.hud.PauseMenu;
 import java.io.IOException;
 import java.util.*;
@@ -77,6 +84,11 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private static GameOverMenu<Actor> gameover;
     private static Entity hero;
     private Logger gameLogger;
+
+    public static float difficulty = 1f;
+
+    public static boolean hasGhost = false;
+    private int levelCount = 0;
 
     public static void main(String[] args) {
         // start the game
@@ -136,7 +148,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         if (playerDied && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             System.exit(0);
         }
-        if(playerDied && Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+        if (playerDied && Gdx.input.isKeyJustPressed(Input.Keys.U)) {
             playerDied = false;
             gameover.hideMenu();
             setHero(new Hero());
@@ -146,9 +158,22 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     @Override
     public void onLevelLoad() {
+        levelCount++;
         currentLevel = levelAPI.getCurrentLevel();
         entities.clear();
         getHero().ifPresent(this::placeOnLevelStart);
+
+        generateMonsters();
+        difficulty += 0.1;
+
+        generateTraps();
+
+        if (levelCount % 5 == 0) {
+            hasGhost = true;
+        } else {
+            hasGhost = false;
+        }
+        generateGhost();
 
         XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
         heroXPCom.addXP(50);
@@ -172,14 +197,14 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private void setCameraFocus() {
         if (getHero().isPresent()) {
             PositionComponent pc =
-                (PositionComponent)
-                    getHero()
-                        .get()
-                        .getComponent(PositionComponent.class)
-                        .orElseThrow(
-                            () ->
-                                new MissingComponentException(
-                                    "PositionComponent"));
+                    (PositionComponent)
+                            getHero()
+                                    .get()
+                                    .getComponent(PositionComponent.class)
+                                    .orElseThrow(
+                                            () ->
+                                                    new MissingComponentException(
+                                                            "PositionComponent"));
             camera.setFocusPoint(pc.getPosition());
 
         } else camera.setFocusPoint(new Point(0, 0));
@@ -191,10 +216,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private boolean isOnEndTile(Entity entity) {
         PositionComponent pc =
-            (PositionComponent)
-                entity.getComponent(PositionComponent.class)
-                    .orElseThrow(
-                        () -> new MissingComponentException("PositionComponent"));
+                (PositionComponent)
+                        entity.getComponent(PositionComponent.class)
+                                .orElseThrow(
+                                        () -> new MissingComponentException("PositionComponent"));
         Tile currentTile = currentLevel.getTileAt(pc.getPosition().toCoordinate());
         return currentTile.equals(currentLevel.getEndTile());
     }
@@ -202,10 +227,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private void placeOnLevelStart(Entity hero) {
         entities.add(hero);
         PositionComponent pc =
-            (PositionComponent)
-                hero.getComponent(PositionComponent.class)
-                    .orElseThrow(
-                        () -> new MissingComponentException("PositionComponent"));
+                (PositionComponent)
+                        hero.getComponent(PositionComponent.class)
+                                .orElseThrow(
+                                        () -> new MissingComponentException("PositionComponent"));
         pc.setPosition(currentLevel.getStartTile().getCoordinate().toPoint());
     }
 
@@ -224,6 +249,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     public static void activateGameOver() {
         gameover.showMenu();
         playerDied = true;
+        difficulty = 1.0f;
     }
 
     /**
@@ -309,5 +335,55 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         new XPSystem();
         new SkillSystem();
         new ProjectileSystem();
+    }
+
+    private void generateMonsters() {
+        Random randomMons = new Random();
+        int monsterAmount =
+                (int) Math.floor(randomMons.nextFloat(3 * difficulty, 5.1f * difficulty));
+        while (monsterAmount > 0) {
+
+            double randomNum = Math.random();
+
+            if (randomNum >= 0.66) {
+                entities.add(new Skelett());
+                monsterAmount--;
+            } else if (randomNum >= 0.33 && difficulty > 1.5) {
+                entities.add(new Daemon());
+                monsterAmount--;
+            } else if (randomNum >= 0.0 && difficulty > 2.0) {
+                entities.add(new Necromancer());
+                monsterAmount--;
+            }
+        }
+    }
+
+    private void generateTraps() {
+        Random trapAmount = new Random();
+        int amount = trapAmount.nextInt(2, 5);
+
+        while (amount > 0) {
+            double randomNum = Math.random();
+
+            if (randomNum >= 0.5) {
+                entities.add(new Schleim(3));
+            } else {
+                entities.add(new Loch(0));
+            }
+            amount--;
+        }
+    }
+
+    private void generateGhost() {
+        if (hasGhost) {
+            Geist geist = new Geist();
+            Grabstein grabstein = new Grabstein(10, 20, 2);
+
+            geist.setGrabstein(grabstein);
+            grabstein.setGeist(geist);
+
+            entities.add(geist);
+            entities.add(grabstein);
+        }
     }
 }

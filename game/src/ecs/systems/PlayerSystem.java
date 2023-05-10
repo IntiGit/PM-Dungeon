@@ -9,9 +9,8 @@ import ecs.components.skill.Skill;
 import ecs.components.skill.SkillComponent;
 import ecs.entities.Entity;
 import ecs.tools.interaction.InteractionTool;
-import starter.Game;
-
 import java.util.Set;
+import starter.Game;
 
 /** Used to control the player */
 public class PlayerSystem extends ECS_System {
@@ -21,9 +20,9 @@ public class PlayerSystem extends ECS_System {
     @Override
     public void update() {
         Game.getEntities().stream()
-            .flatMap(e -> e.getComponent(PlayableComponent.class).stream())
-            .map(pc -> buildDataObject((PlayableComponent) pc))
-            .forEach(this::checkKeystroke);
+                .flatMap(e -> e.getComponent(PlayableComponent.class).stream())
+                .map(pc -> buildDataObject((PlayableComponent) pc))
+                .forEach(this::checkKeystroke);
     }
 
     private void checkKeystroke(KSData ksd) {
@@ -39,23 +38,20 @@ public class PlayerSystem extends ECS_System {
         if (Gdx.input.isKeyPressed(KeyboardConfig.INTERACT_WORLD.get()))
             InteractionTool.interactWithClosestInteractable(ksd.e);
 
-            // check skills
+        // check skills
         else if (Gdx.input.isKeyPressed(KeyboardConfig.FIRST_SKILL.get())) {
             executeSkill(ksd, 1);
-        }
-        else if (Gdx.input.isKeyPressed(KeyboardConfig.SECOND_SKILL.get()))
-            executeSkill(ksd, 2);
-        else if (Gdx.input.isKeyPressed(KeyboardConfig.THIRD_SKILL.get()))
-            executeSkill(ksd, 3);
+        } else if (Gdx.input.isKeyPressed(KeyboardConfig.SECOND_SKILL.get())) executeSkill(ksd, 2);
+        else if (Gdx.input.isKeyPressed(KeyboardConfig.THIRD_SKILL.get())) executeSkill(ksd, 3);
     }
 
     private KSData buildDataObject(PlayableComponent pc) {
         Entity e = pc.getEntity();
 
         VelocityComponent vc =
-            (VelocityComponent)
-                e.getComponent(VelocityComponent.class)
-                    .orElseThrow(PlayerSystem::missingVC);
+                (VelocityComponent)
+                        e.getComponent(VelocityComponent.class)
+                                .orElseThrow(PlayerSystem::missingVC);
 
         return new KSData(e, pc, vc);
     }
@@ -65,10 +61,11 @@ public class PlayerSystem extends ECS_System {
     }
 
     private void executeSkill(KSData ksd, int pSkillID) {
-        SkillComponent heroSC = (SkillComponent) ksd.e.getComponent(SkillComponent.class).orElseThrow();
+        SkillComponent heroSC =
+                (SkillComponent) ksd.e.getComponent(SkillComponent.class).orElseThrow();
         Set<Skill> heroSkills = heroSC.getSkillSet();
-        for(Skill s : heroSkills) {
-            if(s.getSkillID() == pSkillID) {
+        for (Skill s : heroSkills) {
+            if (s.getSkillID() == pSkillID) {
                 s.execute(ksd.e);
             }
         }

@@ -41,11 +41,11 @@ public class PlayableComponent extends Component {
      */
     public boolean isPlayable() {
         playableCompLogger.log(
-            CustomLogLevel.DEBUG,
-            "Checking if entity '"
-                + entity.getClass().getSimpleName()
-                + "' is playable: "
-                + playable);
+                CustomLogLevel.DEBUG,
+                "Checking if entity '"
+                        + entity.getClass().getSimpleName()
+                        + "' is playable: "
+                        + playable);
         return playable;
     }
 
