@@ -78,7 +78,6 @@ public class Grabstein extends Entity implements IInteraction {
                         Game.getHero().get().getComponent(PositionComponent.class).orElseThrow();
         PositionComponent pcGeist =
                 (PositionComponent) geist.getComponent(PositionComponent.class).orElseThrow();
-
         if (AITools.inRange(pcHero.getPosition(), pcGeist.getPosition(), 2)) {
             if (Math.random() < 0.5) {
                 System.out.println("Du erhältst " + xpAmount + " XP");

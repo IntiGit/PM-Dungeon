@@ -8,7 +8,7 @@ public class Skill {
     private ISkillFunction skillFunction;
     private int coolDownInFrames;
     private int currentCoolDownInFrames;
-    private int skillID;
+    private final int skillID;
     /**
      * @param skillFunction Function of this skill
      */
@@ -48,6 +48,9 @@ public class Skill {
         currentCoolDownInFrames = Math.max(0, --currentCoolDownInFrames);
     }
 
+    /**
+     * @return Gibt die SKill ID des Skills zurück
+     */
     public int getSkillID() {
         return skillID;
     }

@@ -246,6 +246,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         }
     }
 
+    /**
+     * Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück
+     */
     public static void activateGameOver() {
         gameover.showMenu();
         playerDied = true;

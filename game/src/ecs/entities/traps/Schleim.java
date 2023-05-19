@@ -81,12 +81,10 @@ public class Schleim extends Falle {
                         }
                     },
                     3f);
-
             SkillComponent sc = (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
             for (Skill s : sc.getSkillSet()) {
                 s.activateCoolDown();
             }
-
             HealthComponent hc =
                     (HealthComponent) b.getComponent(HealthComponent.class).orElseThrow();
             hc.receiveHit(new Damage(trapDmg, DamageType.NEUTRAL, a));
