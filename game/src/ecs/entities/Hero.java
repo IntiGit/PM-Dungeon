@@ -124,7 +124,7 @@ public class Hero extends Entity implements ILevelUp {
                             + "Erhoeht oder verringert deine Geschwindigkeit zufaellig"
                             + "\n"
                             + "Cooldown: "
-                            + healCoolDown
+                            + speedCoolDown
                             + "\n"
                             + "Kosten: 3 Lebenspunkte"
                             + "\n"

@@ -17,12 +17,16 @@ import tools.Point;
  */
 public class GameOverMenu<T extends Actor> extends ScreenController<T> implements IOnDeathFunction {
 
-    /** Creates a new PauseMenu with a new Spritebatch */
+    /** Creates a new GameOverMenu with a new Spritebatch */
     public GameOverMenu() {
         this(new SpriteBatch());
     }
 
-    /** Creates a new PauseMenu with a given Spritebatch */
+    /**
+     * Creates a new GameOverMenu with a new Spritebatch
+     *
+     * @param batch
+     */
     public GameOverMenu(SpriteBatch batch) {
         super(batch);
         ScreenText gameOverText =
