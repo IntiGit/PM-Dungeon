@@ -17,6 +17,10 @@ public class FollowHeroAI implements IFightAI {
     private int currentBreak = 0;
     private int breakTime;
 
+    /**
+     * Konstruktor für die Klasse FollowHeroAI
+     * @param pBreakTime Zeit zwischen den Aufrufen von fight in Sekunden
+     */
     public FollowHeroAI(int pBreakTime) {
         breakTime = pBreakTime * Constants.FRAME_RATE;
     }

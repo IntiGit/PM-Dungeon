@@ -9,7 +9,10 @@ public abstract class Monster extends Entity {
     protected float speed;
 
     /** Pfade zu den Animationen der Monster */
-    protected String pathToIdleLeft, pathToIdleRight, pathToRunLeft, pathToRunRight;
+    protected String pathToIdleLeft;
+    protected String pathToIdleRight;
+    protected String pathToRunLeft;
+    protected String pathToRunRight;
 
     /** Erstellt die AnimationComponent für das Monster */
     abstract void setupAnimationComponent();

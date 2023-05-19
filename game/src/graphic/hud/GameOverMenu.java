@@ -16,17 +16,11 @@ import tools.Point;
  * @param <T>
  */
 public class GameOverMenu<T extends Actor> extends ScreenController<T> implements IOnDeathFunction {
-
     /** Creates a new GameOverMenu with a new Spritebatch */
     public GameOverMenu() {
         this(new SpriteBatch());
     }
-
-    /**
-     * Creates a new GameOverMenu with a new Spritebatch
-     *
-     * @param batch
-     */
+    /** /** Creates a new GameOverMenu with a given Spritebatch */
     public GameOverMenu(SpriteBatch batch) {
         super(batch);
         ScreenText gameOverText =
@@ -43,7 +37,6 @@ public class GameOverMenu<T extends Actor> extends ScreenController<T> implement
                 (Constants.WINDOW_HEIGHT) / 1.5f + gameOverText.getHeight(),
                 Align.center | Align.bottom);
         add((T) gameOverText);
-
         ScreenText screenText =
                 new ScreenText(
                         "Drücke X um das Spiel zu beenden \n" + "Oder U um von Vorne zu beginnen",

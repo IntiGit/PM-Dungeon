@@ -1,12 +1,19 @@
 package ecs.entities;
 
 import dslToGame.AnimationBuilder;
-import ecs.components.*;
 import ecs.components.AnimationComponent;
-import ecs.components.OnHeroDeath;
+import ecs.components.PlayableComponent;
 import ecs.components.PositionComponent;
 import ecs.components.VelocityComponent;
-import ecs.components.skill.*;
+import ecs.components.HealthComponent;
+import ecs.components.HitboxComponent;
+import ecs.components.OnHeroDeath;
+import ecs.components.skill.FireballSkill;
+import ecs.components.skill.Skill;
+import ecs.components.skill.SkillComponent;
+import ecs.components.skill.SkillTools;
+import ecs.components.skill.HealingSkill;
+import ecs.components.skill.SpeedSkill;
 import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
 import graphic.Animation;
