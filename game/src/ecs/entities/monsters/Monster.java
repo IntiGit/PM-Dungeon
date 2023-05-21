@@ -28,4 +28,6 @@ public abstract class Monster extends Entity {
 
     /** Erstellt die AIComponent für das Monster */
     abstract void setupAIComponent();
+
+    abstract void setupHealthComponent();
 }

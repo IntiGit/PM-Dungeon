@@ -1,15 +1,14 @@
 package ecs.entities.monsters;
 
 import dslToGame.AnimationBuilder;
-import ecs.components.AnimationComponent;
-import ecs.components.HitboxComponent;
-import ecs.components.PositionComponent;
-import ecs.components.VelocityComponent;
+import ecs.components.*;
 import ecs.components.ai.AIComponent;
 import ecs.components.ai.fight.CollideAI;
 import ecs.components.ai.idle.PatrouilleWalk;
 import ecs.components.ai.transition.RangeTransition;
 import graphic.Animation;
+
+import java.util.List;
 
 /** Klasse die das Monster Skelett darstellt */
 public class Skelett extends Monster {
@@ -28,6 +27,7 @@ public class Skelett extends Monster {
         setupPositionComponent();
         setupHitboxComponent();
         setupAIComponent();
+        setupHealthComponent();
     }
 
     /** Erstellt die AnimationComponent für das Monster */
@@ -66,5 +66,15 @@ public class Skelett extends Monster {
                 new CollideAI(1),
                 new PatrouilleWalk(4, 2, 5, PatrouilleWalk.MODE.BACK_AND_FORTH),
                 new RangeTransition(3));
+    }
+
+    @Override
+    void setupHealthComponent() {
+        new HealthComponent(
+            this,
+            5,
+            (e) -> {},
+            new Animation(List.of("skelet_idle_anim_f0.png"), 300),
+            new Animation(List.of("skelet_idle_anim_f0.png"), 300));
     }
 }

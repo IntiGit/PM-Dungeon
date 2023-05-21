@@ -6,6 +6,8 @@ import ecs.components.ai.AIComponent;
 import ecs.components.ai.idle.FleeFromHero;
 import graphic.Animation;
 
+import java.util.List;
+
 /** Klasse die das Monster Necromancer darstellt */
 public class Necromancer extends Monster {
 
@@ -23,6 +25,7 @@ public class Necromancer extends Monster {
         setupPositionComponent();
         setupHitboxComponent();
         setupAIComponent();
+        setupHealthComponent();
     }
 
     /** Erstellt die AnimationComponent für das Monster */
@@ -57,5 +60,15 @@ public class Necromancer extends Monster {
     @Override
     void setupAIComponent() {
         new AIComponent(this, (entity) -> {}, new FleeFromHero(2, 10), (entity) -> false);
+    }
+
+    @Override
+    void setupHealthComponent() {
+        new HealthComponent(
+            this,
+            15,
+            (e) -> {},
+            new Animation(List.of("necromancer_anim_f0.png"), 300),
+            new Animation(List.of("necromancer_anim_f0.png"), 300));
     }
 }

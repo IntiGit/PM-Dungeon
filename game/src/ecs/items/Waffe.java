@@ -1,12 +1,10 @@
 package ecs.items;
 
+import ecs.components.skill.Skill;
+import ecs.components.skill.SkillComponent;
 import ecs.entities.Entity;
 import ecs.entities.Hero;
 import graphic.Animation;
-import starter.Game;
-
-import java.time.chrono.HijrahEra;
-import java.util.HashMap;
 
 public class Waffe extends ItemData implements IToggleEquipp{
 
@@ -34,10 +32,22 @@ public class Waffe extends ItemData implements IToggleEquipp{
     @Override
     public void toggleEquipp(Entity e) {
         if(e instanceof Hero hero) {
+            SkillComponent sc = (SkillComponent) hero.getComponent(SkillComponent.class).orElseThrow();
+            removeOldCloseCombatSkill(sc);
             if(hero.getWeapon() != null && hero.getWeapon().equals(this)) {
                 hero.equippWeapon(null);
             } else {
                 hero.equippWeapon(this);
+            }
+            hero.setupCloseCombatSkill(sc);
+        }
+    }
+
+    private void removeOldCloseCombatSkill(SkillComponent sc) {
+        for(Skill s : sc.getSkillSet()) {
+            if(s.getSkillID() == 4) {
+                sc.removeSkill(s);
+                break;
             }
         }
     }

@@ -55,7 +55,7 @@ public class Hero extends Entity implements ILevelUp {
         setupCloseCombatSkill(sc);
     }
 
-    private void setupCloseCombatSkill(SkillComponent sc) {
+    public void setupCloseCombatSkill(SkillComponent sc) {
         sc.addSkill(
             new Skill(
                 new CloseCombatSkill(
