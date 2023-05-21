@@ -8,10 +8,12 @@ import ecs.components.skill.SkillComponent;
 import ecs.damage.Damage;
 import ecs.damage.DamageType;
 import ecs.entities.Entity;
+import ecs.entities.Hero;
 import ecs.entities.monsters.Monster;
 import graphic.Animation;
 import level.elements.tile.Tile;
 import starter.Game;
+import tools.Point;
 
 /** Klasse die die Falle Schleim darstellt */
 public class Schleim extends Falle {
@@ -65,14 +67,15 @@ public class Schleim extends Falle {
      */
     @Override
     public void onCollision(Entity a, Entity b, Tile.Direction from) {
-        if (!(b instanceof Monster)) {
-            VelocityComponent vc =
+        if (b instanceof Hero h) {
+            if(h.getShoes() == null) {
+                VelocityComponent vc =
                     (VelocityComponent) b.getComponent(VelocityComponent.class).orElseThrow();
-            float speed = vc.getXVelocity();
-            vc.setXVelocity(0.05f);
-            vc.setYVelocity(0.05f);
+                float speed = vc.getXVelocity();
+                vc.setXVelocity(0.05f);
+                vc.setYVelocity(0.05f);
 
-            Timer.schedule(
+                Timer.schedule(
                     new Timer.Task() {
                         @Override
                         public void run() {
@@ -81,17 +84,25 @@ public class Schleim extends Falle {
                         }
                     },
                     3f);
-            SkillComponent sc = (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
-            for (Skill s : sc.getSkillSet()) {
-                s.activateCoolDown();
-            }
-            HealthComponent hc =
+                SkillComponent sc = (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
+                for (Skill s : sc.getSkillSet()) {
+                    s.activateCoolDown();
+                }
+                HealthComponent hc =
                     (HealthComponent) b.getComponent(HealthComponent.class).orElseThrow();
-            hc.receiveHit(new Damage(trapDmg, DamageType.NEUTRAL, a));
-            System.out.println(
+                hc.receiveHit(new Damage(trapDmg, DamageType.NEUTRAL, a));
+                System.out.println(
                     "Lebenspunkte betragen nun " + (hc.getCurrentHealthpoints() - trapDmg));
-
-            Game.removeEntity(a);
+                Game.removeEntity(a);
+            } else {
+                if(h.getShoes().getItemName().equals("Noch dickere Treter")) {
+                    Gift g = new Gift(3);
+                    PositionComponent pcG = (PositionComponent) g.getComponent(PositionComponent.class).orElseThrow();
+                    PositionComponent pcA = (PositionComponent) a.getComponent(PositionComponent.class).orElseThrow();
+                    pcG.setPosition(pcA.getPosition());
+                }
+                Game.removeEntity(a);
+            }
         }
     }
 }

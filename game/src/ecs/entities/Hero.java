@@ -1,13 +1,7 @@
 package ecs.entities;
 
 import dslToGame.AnimationBuilder;
-import ecs.components.AnimationComponent;
-import ecs.components.PlayableComponent;
-import ecs.components.PositionComponent;
-import ecs.components.VelocityComponent;
-import ecs.components.HealthComponent;
-import ecs.components.HitboxComponent;
-import ecs.components.OnHeroDeath;
+import ecs.components.*;
 import ecs.components.skill.FireballSkill;
 import ecs.components.skill.Skill;
 import ecs.components.skill.SkillComponent;
@@ -16,6 +10,7 @@ import ecs.components.skill.HealingSkill;
 import ecs.components.skill.SpeedSkill;
 import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
+import ecs.items.ItemData;
 import graphic.Animation;
 import java.util.List;
 
@@ -36,6 +31,9 @@ public class Hero extends Entity implements ILevelUp {
     private final String pathToRunLeft = "knight/runLeft";
     private final String pathToRunRight = "knight/runRight";
 
+    private ItemData weapon;
+    private ItemData shoes;
+
     /** Entity with Components */
     public Hero() {
         super();
@@ -47,6 +45,7 @@ public class Hero extends Entity implements ILevelUp {
         new PlayableComponent(this);
         setupHealthComponent();
         setupXPComponent();
+        setupInventoryComponent();
     }
 
     private void setupSkillComponent() {
@@ -91,6 +90,26 @@ public class Hero extends Entity implements ILevelUp {
 
     private void setupXPComponent() {
         new XPComponent(this, this);
+    }
+
+    private void setupInventoryComponent(){
+        new InventoryComponent(this, 10);
+    }
+
+    public void equippWeapon(ItemData pWeapon) {
+        weapon = pWeapon;
+    }
+
+    public void equippShoes(ItemData pShoes) {
+        shoes = pShoes;
+    }
+
+    public ItemData getWeapon() {
+        return weapon;
+    }
+
+    public ItemData getShoes() {
+        return shoes;
     }
 
     @Override

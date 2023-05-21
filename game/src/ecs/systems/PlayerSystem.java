@@ -2,12 +2,15 @@ package ecs.systems;
 
 import com.badlogic.gdx.Gdx;
 import configuration.KeyboardConfig;
+import ecs.components.InventoryComponent;
 import ecs.components.MissingComponentException;
 import ecs.components.PlayableComponent;
 import ecs.components.VelocityComponent;
 import ecs.components.skill.Skill;
 import ecs.components.skill.SkillComponent;
 import ecs.entities.Entity;
+import ecs.items.ItemData;
+import ecs.items.ItemType;
 import ecs.tools.interaction.InteractionTool;
 import java.util.Set;
 import starter.Game;
@@ -37,11 +40,9 @@ public class PlayerSystem extends ECS_System {
 
         if (Gdx.input.isKeyPressed(KeyboardConfig.INTERACT_WORLD.get()))
             InteractionTool.interactWithClosestInteractable(ksd.e);
-
         // check skills
-        else if (Gdx.input.isKeyPressed(KeyboardConfig.FIRST_SKILL.get())) {
-            executeSkill(ksd, 1);
-        } else if (Gdx.input.isKeyPressed(KeyboardConfig.SECOND_SKILL.get())) executeSkill(ksd, 2);
+        else if (Gdx.input.isKeyPressed(KeyboardConfig.FIRST_SKILL.get())) executeSkill(ksd, 1);
+        else if (Gdx.input.isKeyPressed(KeyboardConfig.SECOND_SKILL.get())) executeSkill(ksd, 2);
         else if (Gdx.input.isKeyPressed(KeyboardConfig.THIRD_SKILL.get())) executeSkill(ksd, 3);
     }
 
