@@ -44,6 +44,8 @@ public class PlayerSystem extends ECS_System {
         else if (Gdx.input.isKeyPressed(KeyboardConfig.FIRST_SKILL.get())) executeSkill(ksd, 1);
         else if (Gdx.input.isKeyPressed(KeyboardConfig.SECOND_SKILL.get())) executeSkill(ksd, 2);
         else if (Gdx.input.isKeyPressed(KeyboardConfig.THIRD_SKILL.get())) executeSkill(ksd, 3);
+        else if (Gdx.input.isKeyPressed(KeyboardConfig.CLOSE_COMBAT_SKILL.get())) executeSkill(ksd, 4);
+
     }
 
     private KSData buildDataObject(PlayableComponent pc) {

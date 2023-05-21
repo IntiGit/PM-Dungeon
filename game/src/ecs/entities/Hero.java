@@ -2,15 +2,12 @@ package ecs.entities;
 
 import dslToGame.AnimationBuilder;
 import ecs.components.*;
-import ecs.components.skill.FireballSkill;
-import ecs.components.skill.Skill;
-import ecs.components.skill.SkillComponent;
-import ecs.components.skill.SkillTools;
-import ecs.components.skill.HealingSkill;
-import ecs.components.skill.SpeedSkill;
+import ecs.components.skill.*;
 import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
 import ecs.items.ItemData;
+import ecs.items.Schuhe;
+import ecs.items.Waffe;
 import graphic.Animation;
 import java.util.List;
 
@@ -31,8 +28,8 @@ public class Hero extends Entity implements ILevelUp {
     private final String pathToRunLeft = "knight/runLeft";
     private final String pathToRunRight = "knight/runRight";
 
-    private ItemData weapon;
-    private ItemData shoes;
+    private Waffe weapon;
+    private Schuhe shoes;
 
     /** Entity with Components */
     public Hero() {
@@ -55,6 +52,18 @@ public class Hero extends Entity implements ILevelUp {
                         new FireballSkill(SkillTools::getCursorPositionAsPoint),
                         fireballCoolDown,
                         1));
+        setupCloseCombatSkill(sc);
+    }
+
+    private void setupCloseCombatSkill(SkillComponent sc) {
+        sc.addSkill(
+            new Skill(
+                new CloseCombatSkill(
+                    1,
+                    weapon,
+                    "",
+                    1f,
+                    0.1f),1,4));
     }
 
     private void setupVelocityComponent() {
@@ -96,19 +105,19 @@ public class Hero extends Entity implements ILevelUp {
         new InventoryComponent(this, 10);
     }
 
-    public void equippWeapon(ItemData pWeapon) {
+    public void equippWeapon(Waffe pWeapon) {
         weapon = pWeapon;
     }
 
-    public void equippShoes(ItemData pShoes) {
+    public void equippShoes(Schuhe pShoes) {
         shoes = pShoes;
     }
 
-    public ItemData getWeapon() {
+    public Waffe getWeapon() {
         return weapon;
     }
 
-    public ItemData getShoes() {
+    public Schuhe getShoes() {
         return shoes;
     }
 
