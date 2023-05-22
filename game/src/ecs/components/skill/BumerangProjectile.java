@@ -18,17 +18,19 @@ public class BumerangProjectile extends Entity implements ICollide {
     private float range;
     private float speed;
     private Point start;
+    private boolean returning;
 
     public BumerangProjectile() {
 
     }
 
-    public BumerangProjectile(int dmg, String pathToTexture, float range, float speed, Point start) {
+    public BumerangProjectile(int dmg, String pathToTexture, float range, float speed, Point start, boolean returning) {
         this.dmg = dmg;
         this.pathToTexture = pathToTexture;
         this.range = range;
         this.speed = speed;
         this.start = start;
+        this.returning = returning;
     }
 
     public void setupPositionComponent(Point p){
@@ -78,6 +80,8 @@ public class BumerangProjectile extends Entity implements ICollide {
                         hc -> {
                             ((HealthComponent) hc).receiveHit(new Damage(dmg, DamageType.NEUTRAL, null));
                         });
+        } else if(returning) {
+            Game.removeEntity(a);
         }
     }
 }

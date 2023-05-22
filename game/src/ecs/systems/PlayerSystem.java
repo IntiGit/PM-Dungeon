@@ -46,6 +46,7 @@ public class PlayerSystem extends ECS_System {
         else if (Gdx.input.isKeyPressed(KeyboardConfig.THIRD_SKILL.get())) executeSkill(ksd, 3);
         else if (Gdx.input.isKeyPressed(KeyboardConfig.CLOSE_COMBAT_SKILL.get())) executeSkill(ksd, 4);
         else if (Gdx.input.isKeyPressed(KeyboardConfig.RANGE_COMBAT_SKILL_1.get())) executeSkill(ksd, 5);
+        else if (Gdx.input.isKeyPressed(KeyboardConfig.RANGE_COMBAT_SKILL_2.get())) executeSkill(ksd, 6);
 
     }
 

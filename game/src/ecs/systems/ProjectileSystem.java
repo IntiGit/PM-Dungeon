@@ -44,7 +44,8 @@ public class ProjectileSystem extends ECS_System {
                             "animation/missingTexture.png",
                             5f,
                             0.3f,
-                            start);
+                            start,
+                            true);
 
                         ((BumerangProjectile) projectile).setupPositionComponent(psd.pc.getPosition());
                         ((BumerangProjectile) projectile).setupVelocityAndProjectileComponent(psd.pc, pcHero.getPosition());

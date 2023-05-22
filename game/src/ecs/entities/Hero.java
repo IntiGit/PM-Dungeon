@@ -73,6 +73,11 @@ public class Hero extends Entity implements ILevelUp {
                 new RangeCombatSkill(new BumerangProjectile()),
                 5f,
                 5));
+        sc.addSkill(
+            new Skill(
+                new RangeCombatSkill(new GummyBearProjectile()),
+                5f,
+                6));
     }
 
     private void setupVelocityComponent() {
