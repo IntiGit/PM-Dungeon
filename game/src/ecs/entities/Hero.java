@@ -66,6 +66,15 @@ public class Hero extends Entity implements ILevelUp {
                     0.1f),1,4));
     }
 
+    private void setupRangeCombatSkills(SkillComponent sc) {
+        PositionComponent pc = (PositionComponent) this.getComponent(PositionComponent.class).orElseThrow();
+        sc.addSkill(
+            new Skill(
+                new RangeCombatSkill(new BumerangProjectile()),
+                5f,
+                5));
+    }
+
     private void setupVelocityComponent() {
         Animation moveRight = AnimationBuilder.buildAnimation(pathToRunRight);
         Animation moveLeft = AnimationBuilder.buildAnimation(pathToRunLeft);
@@ -133,7 +142,12 @@ public class Hero extends Entity implements ILevelUp {
         int bonus = nexLevel % 5 == 0 ? 1 : 0;
         myHC.setMaximalHealthpoints(myHC.getMaximalHealthpoints() + bonus + 1);
 
-        if (nexLevel == 5) {
+        if (nexLevel == 2) {
+            SkillComponent mySC =
+                (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
+            setupRangeCombatSkills(mySC);
+        }
+        else if (nexLevel == 5) {
             SkillComponent mySC =
                     (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             mySC.addSkill(new Skill(new HealingSkill(), healCoolDown, 2));
