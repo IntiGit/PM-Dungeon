@@ -6,7 +6,6 @@ import ecs.components.collision.ICollide;
 import ecs.damage.Damage;
 import ecs.damage.DamageType;
 import ecs.entities.Entity;
-import ecs.entities.monsters.Monster;
 import graphic.Animation;
 import level.elements.tile.Tile;
 import starter.Game;

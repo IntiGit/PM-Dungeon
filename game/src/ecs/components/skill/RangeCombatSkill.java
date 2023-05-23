@@ -12,7 +12,11 @@ import java.util.Random;
 public class RangeCombatSkill implements ISkillFunction{
     private Entity projectile;
 
-    public static final List<String> gummyBearTextures = List.of("animation/missingTexture.png");
+    public static final List<String> gummyBearTextures =
+        List.of(
+            "gummyBear/gummyBear_green.png",
+            "gummyBear/gummyBear_orange.png",
+            "gummyBear/gummyBear_red.png");
 
     public RangeCombatSkill(Entity projectile) {
        this.projectile = projectile;
@@ -27,7 +31,7 @@ public class RangeCombatSkill implements ISkillFunction{
         if(projectile instanceof BumerangProjectile) {
             projectile = new BumerangProjectile(
                 3,
-                "animation/missingTexture.png",
+                "character/knight/attack/bumerang",
                 5f,
                 0.3f,
                 start,

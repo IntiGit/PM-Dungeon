@@ -6,6 +6,7 @@ import ecs.components.collision.ICollide;
 import ecs.damage.Damage;
 import ecs.damage.DamageType;
 import ecs.entities.Entity;
+import ecs.entities.Hero;
 import ecs.items.Waffe;
 import graphic.Animation;
 import starter.Game;
@@ -17,6 +18,7 @@ public class CloseCombatSkill implements ISkillFunction{
     private String pathToTexture;
     private float range;
     private float speed;
+    private boolean hasAttacked = false;
     public CloseCombatSkill(int dmg, Waffe weapon, String pathToTexture, float range, float speed) {
         this.dmg = weapon == null ? dmg : dmg + weapon.getDamage();
         this.pathToTexture = pathToTexture;
@@ -27,17 +29,31 @@ public class CloseCombatSkill implements ISkillFunction{
     @Override
     public void execute(Entity entity) {
         AnimationComponent ac = (AnimationComponent) entity.getComponent(AnimationComponent.class).orElseThrow();
-        String texture;
+        String texture = "animation/empty.png";
         int blickrichtung;
         String dir = "";
         if(ac.getIdleLeft().equals(ac.getCurrentAnimation())) {
             //Blickrichtung links
-            texture = "animation/missingTexture.png";
+            if(entity instanceof Hero h && h.getWeapon() != null) {
+                if(h.getWeapon().getItemName().equals("Jade Klinge")) {
+                    texture = "character/knight/attack/swords/katana/attackLeft";
+                }
+                if(h.getWeapon().getItemName().equals("Rostige Klinge")) {
+                    texture = "character/knight/attack/swords/rostigeKlinge/attackLeft";
+                }
+            }
             blickrichtung = -1;
             dir = "W";
         } else {
             //Blickrichtung rechts
-            texture = "animation/missingTexture.png";
+            if(entity instanceof Hero h && h.getWeapon() != null) {
+                if(h.getWeapon().getItemName().equals("Jade Klinge")) {
+                    texture = "character/knight/attack/swords/katana/attackRight";
+                }
+                if(h.getWeapon().getItemName().equals("Rostige Klinge")) {
+                    texture = "character/knight/attack/swords/rostigeKlinge/attackRight";
+                }
+            }
             blickrichtung = 1;
             dir = "E";
         }
@@ -51,8 +67,10 @@ public class CloseCombatSkill implements ISkillFunction{
         } else {
             ts = pc::getPosition;
         }
+        int plusDmg = 0;
+        if(entity instanceof Hero h) plusDmg = h.getplusDmg();
 
-        createProjectile(entity, texture, ts, this.range, this.speed, this.dmg, dir);
+        createProjectile(entity, texture, ts, this.range, this.speed, this.dmg+plusDmg, dir);
 
     }
 
@@ -63,6 +81,7 @@ public class CloseCombatSkill implements ISkillFunction{
                                   float projectileSpeed,
                                   int projectileDamage,
                                   String dir) {
+        hasAttacked = false;
         Entity projectile = new Entity();
         PositionComponent epc =
             (PositionComponent)
@@ -85,13 +104,13 @@ public class CloseCombatSkill implements ISkillFunction{
         new ProjectileComponent(projectile, epc.getPosition(), targetPoint);
         ICollide collide =
             (a, b, from) -> {
-                if (b != entity) {
+                if (b != entity && !hasAttacked) {
                     b.getComponent(HealthComponent.class)
                         .ifPresent(
                             hc -> {
                                 applyKnockback(b, dir,2);
                                 ((HealthComponent) hc).receiveHit(new Damage(projectileDamage, DamageType.NEUTRAL, null));
-                                Game.removeEntity(projectile);
+                                hasAttacked = true;
                             });
                 }
             };

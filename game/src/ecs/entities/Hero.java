@@ -31,6 +31,8 @@ public class Hero extends Entity implements ILevelUp {
     private Waffe weapon;
     private Schuhe shoes;
 
+    private int plusDmg = 1;
+
     /** Entity with Components */
     public Hero() {
         super();
@@ -63,7 +65,7 @@ public class Hero extends Entity implements ILevelUp {
                     weapon,
                     "",
                     1f,
-                    0.1f),1,4));
+                    0.05f),1,4));
     }
 
     private void setupRangeCombatSkills(SkillComponent sc) {
@@ -133,6 +135,14 @@ public class Hero extends Entity implements ILevelUp {
 
     public Schuhe getShoes() {
         return shoes;
+    }
+
+    public void setplusDmg(int pplusDmg) {
+        plusDmg = pplusDmg;
+    }
+
+    public int getplusDmg() {
+        return plusDmg;
     }
 
     @Override

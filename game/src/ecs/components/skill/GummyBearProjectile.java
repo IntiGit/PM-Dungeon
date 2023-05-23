@@ -113,7 +113,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
                 .filter((e) -> e instanceof Monster m && !visitedMonsters.contains(m))
                 .toList());
         monster.sort(Comparator.comparingInt(a -> AITools.calculatePath(a, projectile).getCount()));
-        return (Monster) monster.get(0);
+        return !monster.isEmpty() ? (Monster) monster.get(0) : null;
     }
 
     @Override
@@ -124,10 +124,27 @@ public class GummyBearProjectile extends Entity implements ICollide {
                     hc -> {
                         visitedMonsters.add(m);
                         createNextGummybear(a);
-
+                        applyKnockback(b, 2);
                         ((HealthComponent) hc).receiveHit(new Damage(dmg, DamageType.NEUTRAL, null));
                         Game.removeEntity(a);
                     });
+        }
+    }
+
+    private void applyKnockback(Entity e, int knockbackAmount) {
+        VelocityComponent vc =
+            (VelocityComponent) e.getComponent(VelocityComponent.class).orElseThrow();
+        PositionComponent pcE =
+            (PositionComponent) e.getComponent(PositionComponent.class).orElseThrow();
+        PositionComponent pcH =
+            (PositionComponent) Game.getHero().get().getComponent(PositionComponent.class).orElseThrow();
+        Point directionVector = Point.getUnitDirectionalVector(pcE.getPosition(), pcH.getPosition());
+        Point checkPosition = new Point(
+            pcE.getPosition().x + directionVector.x * knockbackAmount,
+            pcE.getPosition().y + directionVector.y * knockbackAmount);
+        if(Game.currentLevel.getTileAt(checkPosition.toCoordinate()).isAccessible()) {
+            vc.setCurrentXVelocity(directionVector.x * knockbackAmount);
+            vc.setCurrentYVelocity(directionVector.y * knockbackAmount);
         }
     }
 

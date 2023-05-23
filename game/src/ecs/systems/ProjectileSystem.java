@@ -41,7 +41,7 @@ public class ProjectileSystem extends ECS_System {
 
                         projectile = new BumerangProjectile(
                             3,
-                            "animation/missingTexture.png",
+                            "character/knight/attack/bumerang",
                             5f,
                             0.3f,
                             start,
