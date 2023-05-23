@@ -74,7 +74,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
         new ProjectileComponent(this,epc.getPosition(),targetPoint);
     }
 
-    private void createNextGummybear(Entity oldProjectile, Entity monster) {
+    private void createNextGummybear(Entity oldProjectile) {
         Entity projectile;
         PositionComponent pcProjectile =
             (PositionComponent) oldProjectile.getComponent(PositionComponent.class).orElseThrow();
@@ -123,7 +123,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
                 .ifPresent(
                     hc -> {
                         visitedMonsters.add(m);
-                        createNextGummybear(a,b);
+                        createNextGummybear(a);
 
                         ((HealthComponent) hc).receiveHit(new Damage(dmg, DamageType.NEUTRAL, null));
                         Game.removeEntity(a);

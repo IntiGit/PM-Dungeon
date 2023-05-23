@@ -151,6 +151,16 @@ public class Hero extends Entity implements ILevelUp {
             SkillComponent mySC =
                 (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             setupRangeCombatSkills(mySC);
+            System.out.println(
+                "Fernkampf Angriffe freigeschaltet: "
+                    + "\n"
+                    + "Bumerang Angriff"
+                    + "\n"
+                    + "Taste: Q"
+                    + "\n"
+                    + "Gummiebaerchen Angriff"
+                    + "\n"
+                    + "Taste: R");
         }
         else if (nexLevel == 5) {
             SkillComponent mySC =

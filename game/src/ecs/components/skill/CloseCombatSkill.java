@@ -29,14 +29,17 @@ public class CloseCombatSkill implements ISkillFunction{
         AnimationComponent ac = (AnimationComponent) entity.getComponent(AnimationComponent.class).orElseThrow();
         String texture;
         int blickrichtung;
+        String dir = "";
         if(ac.getIdleLeft().equals(ac.getCurrentAnimation())) {
             //Blickrichtung links
             texture = "animation/missingTexture.png";
             blickrichtung = -1;
+            dir = "W";
         } else {
             //Blickrichtung rechts
             texture = "animation/missingTexture.png";
             blickrichtung = 1;
+            dir = "E";
         }
 
         PositionComponent pc = (PositionComponent) entity.getComponent(PositionComponent.class).orElseThrow();
@@ -49,7 +52,7 @@ public class CloseCombatSkill implements ISkillFunction{
             ts = pc::getPosition;
         }
 
-        createProjectile(entity, texture, ts, this.range, this.speed, this.dmg);
+        createProjectile(entity, texture, ts, this.range, this.speed, this.dmg, dir);
 
     }
 
@@ -58,7 +61,8 @@ public class CloseCombatSkill implements ISkillFunction{
                                   ITargetSelection selectionFunction,
                                   float projectileRange,
                                   float projectileSpeed,
-                                  int projectileDamage) {
+                                  int projectileDamage,
+                                  String dir) {
         Entity projectile = new Entity();
         PositionComponent epc =
             (PositionComponent)
@@ -85,6 +89,7 @@ public class CloseCombatSkill implements ISkillFunction{
                     b.getComponent(HealthComponent.class)
                         .ifPresent(
                             hc -> {
+                                applyKnockback(b, dir,2);
                                 ((HealthComponent) hc).receiveHit(new Damage(projectileDamage, DamageType.NEUTRAL, null));
                                 Game.removeEntity(projectile);
                             });
@@ -92,6 +97,25 @@ public class CloseCombatSkill implements ISkillFunction{
             };
 
         new HitboxComponent(
-            projectile, new Point(0.25f, 0.25f), new Point(10,10), collide, null);
+            projectile, new Point(0.25f, 0.25f), new Point(1,1), collide, null);
+    }
+
+    private void applyKnockback(Entity e, String dir, int knockbackAmount) {
+        VelocityComponent vc =
+            (VelocityComponent) e.getComponent(VelocityComponent.class).orElseThrow();
+        PositionComponent pc =
+            (PositionComponent) e.getComponent(PositionComponent.class).orElseThrow();
+        Point checkPosition;
+        if(dir.equals("E")) {
+            checkPosition = new Point(pc.getPosition().x + knockbackAmount,pc.getPosition().y);
+            if(Game.currentLevel.getTileAt(checkPosition.toCoordinate()).isAccessible()) {
+                vc.setCurrentXVelocity(knockbackAmount);
+            }
+        } else if(dir.equals("W")) {
+            checkPosition = new Point(pc.getPosition().x - 2,pc.getPosition().y);
+            if(Game.currentLevel.getTileAt(checkPosition.toCoordinate()).isAccessible()) {
+                vc.setCurrentXVelocity(-knockbackAmount);
+            }
+        }
     }
 }

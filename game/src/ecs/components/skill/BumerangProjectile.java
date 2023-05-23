@@ -78,10 +78,28 @@ public class BumerangProjectile extends Entity implements ICollide {
                 b.getComponent(HealthComponent.class)
                     .ifPresent(
                         hc -> {
+                            applyKnockback(b, 2);
                             ((HealthComponent) hc).receiveHit(new Damage(dmg, DamageType.NEUTRAL, null));
                         });
         } else if(returning) {
             Game.removeEntity(a);
+        }
+    }
+
+    private void applyKnockback(Entity e, int knockbackAmount) {
+        VelocityComponent vc =
+            (VelocityComponent) e.getComponent(VelocityComponent.class).orElseThrow();
+        PositionComponent pcE =
+            (PositionComponent) e.getComponent(PositionComponent.class).orElseThrow();
+        PositionComponent pcH =
+            (PositionComponent) Game.getHero().get().getComponent(PositionComponent.class).orElseThrow();
+        Point directionVector = Point.getUnitDirectionalVector(pcE.getPosition(), pcH.getPosition());
+        Point checkPosition = new Point(
+            pcE.getPosition().x + directionVector.x * knockbackAmount,
+            pcE.getPosition().y + directionVector.y * knockbackAmount);
+        if(Game.currentLevel.getTileAt(checkPosition.toCoordinate()).isAccessible()) {
+            vc.setCurrentXVelocity(directionVector.x * knockbackAmount);
+            vc.setCurrentYVelocity(directionVector.y * knockbackAmount);
         }
     }
 }
