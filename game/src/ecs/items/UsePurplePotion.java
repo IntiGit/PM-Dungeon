@@ -1,7 +1,6 @@
 package ecs.items;
 
 import com.badlogic.gdx.utils.Timer;
-import ecs.components.skill.SkillComponent;
 import ecs.entities.Entity;
 import ecs.entities.Hero;
 

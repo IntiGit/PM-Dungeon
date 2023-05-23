@@ -69,6 +69,11 @@ public class Loch extends Falle {
             xpc.setCurrentXP(0);
             xpc.setCurrentLevel(Math.max(0, xpc.getCurrentLevel() - 2));
 
+            if (xpc.getCurrentLevel() < 2) {
+                SkillComponent sc =
+                    (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
+                sc.getSkillSet().removeIf(s -> s.getSkillID() == 5 || s.getSkillID() == 6);
+            }
             if (xpc.getCurrentLevel() < 5) {
                 SkillComponent sc =
                         (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
