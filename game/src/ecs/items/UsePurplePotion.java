@@ -1,6 +1,7 @@
 package ecs.items;
 
 import com.badlogic.gdx.utils.Timer;
+import ecs.components.InventoryComponent;
 import ecs.entities.Entity;
 import ecs.entities.Hero;
 
@@ -18,6 +19,25 @@ public class UsePurplePotion implements IOnUse{
                     }
                 },
                 5f);
+        }
+        InventoryComponent ic = (InventoryComponent) e.getComponent(InventoryComponent.class).orElseThrow();
+        if(!ic.removeItem(item)) {
+            removeFromBag(item, ic);
+        }
+    }
+
+    private void removeFromBag(ItemData item, InventoryComponent ic) {
+        for(ItemData i : ic.getItems()) {
+            if(i instanceof Tasche bag) {
+                if(bag.getContentType().equals(Trank.class)) {
+                    for(Object trank : bag.getItemsInBag()) {
+                        if(trank.equals(item)) {
+                            bag.removeItem(item);
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
