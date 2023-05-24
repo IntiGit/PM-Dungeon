@@ -33,6 +33,7 @@ import graphic.hud.GameOverMenu;
 import graphic.hud.PauseMenu;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import level.IOnLevelLoader;
 import level.LevelAPI;
@@ -42,6 +43,7 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
+import logging.CustomLogLevel;
 import tools.Constants;
 import tools.Point;
 
@@ -186,8 +188,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
         heroXPCom.addXP(50);
-        System.out.println("XP: " + heroXPCom.getCurrentXP());
-        System.out.println("LVL: " + heroXPCom.getCurrentLevel());
+        gameLogger.info("\nXP: " + heroXPCom.getCurrentXP() + "\n" +
+                        "LVL: " + heroXPCom.getCurrentLevel());
     }
 
     private void manageEntitiesSets() {
@@ -259,9 +261,11 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         inventoryOpen = !inventoryOpen;
         if(inventoryOpen) {
             InventoryComponent ic = (InventoryComponent) getHero().get().getComponent(InventoryComponent.class).orElseThrow();
+            StringBuilder logMessageInventory = new StringBuilder();
             for (int i = 0; i < ic.filledSlots(); i++) {
-                System.out.println(i + ": " + ic.getItems().get(i).getItemName());
+                logMessageInventory.append(i).append(": ").append(ic.getItems().get(i).getItemName()).append("\n");
             }
+            gameLogger.info("\n" + logMessageInventory);
             int inputInv = sc.nextInt();
             if(inputInv >= 0 && inputInv < ic.filledSlots()) {
                 ItemData item = ic.getItems().get(inputInv);
@@ -270,8 +274,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
                 } else if(item instanceof Waffe || item instanceof Schuhe) {
                     ((IToggleEquipp) item).toggleEquipp(getHero().get());
                 } else if(item instanceof Tasche<?> bag) {
+                    StringBuilder logMessageBag = new StringBuilder();
                     for (int i = 0; i < bag.getItemsInBag().size(); i++) {
-                        System.out.println("    " + i + ": " + bag.getItemsInBag().get(i).getItemName());
+                        logMessageBag.append("    ").append(i).append(": ").append(bag.getItemsInBag().get(i).getItemName());
                     }
                     if(!bag.isEmpty()) {
                         int in = sc.nextInt();

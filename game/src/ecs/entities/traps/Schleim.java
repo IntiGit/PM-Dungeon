@@ -15,9 +15,12 @@ import level.elements.tile.Tile;
 import starter.Game;
 import tools.Point;
 
+import java.util.logging.Logger;
+
 /** Klasse die die Falle Schleim darstellt */
 public class Schleim extends Falle {
 
+    private final Logger slimeLogger = Logger.getLogger(this.getClass().getName());
     /**
      * Konstruktor für die Klasse Schleim
      *
@@ -91,7 +94,7 @@ public class Schleim extends Falle {
                 HealthComponent hc =
                     (HealthComponent) b.getComponent(HealthComponent.class).orElseThrow();
                 hc.receiveHit(new Damage(trapDmg, DamageType.NEUTRAL, a));
-                System.out.println(
+                slimeLogger.info(
                     "Lebenspunkte betragen nun " + (hc.getCurrentHealthpoints() - trapDmg));
                 Game.removeEntity(a);
             } else {

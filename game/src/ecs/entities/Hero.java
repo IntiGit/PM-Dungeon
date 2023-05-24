@@ -10,12 +10,15 @@ import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * The Hero is the player character. It's entity in the ECS. This class helps to setup the hero with
  * all its components and attributes .
  */
 public class Hero extends Entity implements ILevelUp {
+
+    private final Logger heroLogger = Logger.getLogger(this.getClass().getName());
 
     private final int fireballCoolDown = 5;
     private final int healCoolDown = 30;
@@ -97,8 +100,8 @@ public class Hero extends Entity implements ILevelUp {
     private void setupHitboxComponent() {
         new HitboxComponent(
                 this,
-                (you, other, direction) -> System.out.println("heroCollisionEnter"),
-                (you, other, direction) -> System.out.println("heroCollisionLeave"));
+                (you, other, direction) -> heroLogger.info("heroCollisionEnter"),
+                (you, other, direction) -> heroLogger.info("heroCollisionLeave"));
     }
 
     private void setupHealthComponent() {
@@ -151,7 +154,7 @@ public class Hero extends Entity implements ILevelUp {
      * 10 werden neue Skills freigeschaltet
      */
     public void onLevelUp(long nexLevel) {
-        System.out.println("Levelaustieg zu Level " + nexLevel);
+        heroLogger.info("Levelaustieg zu Level " + nexLevel);
         HealthComponent myHC =
                 (HealthComponent) this.getComponent(HealthComponent.class).orElseThrow();
         int bonus = nexLevel % 5 == 0 ? 1 : 0;
@@ -161,7 +164,7 @@ public class Hero extends Entity implements ILevelUp {
             SkillComponent mySC =
                 (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             setupRangeCombatSkills(mySC);
-            System.out.println(
+            heroLogger.info(
                 "Fernkampf Angriffe freigeschaltet: "
                     + "\n"
                     + "Bumerang Angriff"
@@ -176,7 +179,7 @@ public class Hero extends Entity implements ILevelUp {
             SkillComponent mySC =
                     (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             mySC.addSkill(new Skill(new HealingSkill(), healCoolDown, 2));
-            System.out.println(
+            heroLogger.info(
                     "Heilungszauber freigeschaltet: "
                             + "\n"
                             + "Heilt dich um 30% bis 50% deiner maximalen Leben"
@@ -192,7 +195,7 @@ public class Hero extends Entity implements ILevelUp {
                     (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             mySC.addSkill(new Skill(new SpeedSkill(3), speedCoolDown, 3));
 
-            System.out.println(
+            heroLogger.info(
                     "Geschwindigkeitszauber freigeschaltet: "
                             + "\n"
                             + "Erhoeht oder verringert deine Geschwindigkeit zufaellig"
