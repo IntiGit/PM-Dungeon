@@ -7,7 +7,6 @@ import ecs.components.ai.fight.CollideAI;
 import ecs.components.ai.idle.PatrouilleWalk;
 import ecs.components.ai.transition.RangeTransition;
 import graphic.Animation;
-
 import java.util.List;
 
 /** Klasse die das Monster Skelett darstellt */
@@ -71,10 +70,10 @@ public class Skelett extends Monster {
     @Override
     void setupHealthComponent() {
         new HealthComponent(
-            this,
-            5,
-            (e) -> {},
-            new Animation(List.of("skelet_idle_anim_f0.png"), 300),
-            new Animation(List.of("skelet_idle_anim_f0.png"), 300));
+                this,
+                5,
+                (e) -> {},
+                new Animation(List.of("skelet_idle_anim_f0.png"), 300),
+                new Animation(List.of("skelet_idle_anim_f0.png"), 300));
     }
 }

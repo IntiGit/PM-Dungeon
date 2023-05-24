@@ -5,7 +5,6 @@ import ecs.components.*;
 import ecs.components.skill.*;
 import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
-import ecs.items.ItemData;
 import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
@@ -60,29 +59,19 @@ public class Hero extends Entity implements ILevelUp {
         setupCloseCombatSkill(sc);
     }
 
+    /**
+     * Fuegt dem Skillset des Helden den Nahkampf Skill hinzu
+     * @param sc Skillcomponent
+     */
     public void setupCloseCombatSkill(SkillComponent sc) {
-        sc.addSkill(
-            new Skill(
-                new CloseCombatSkill(
-                    1,
-                    weapon,
-                    "",
-                    1f,
-                    0.05f),1,4));
+        sc.addSkill(new Skill(new CloseCombatSkill(1, weapon, "", 1f, 0.05f), 1, 4));
     }
 
     private void setupRangeCombatSkills(SkillComponent sc) {
-        PositionComponent pc = (PositionComponent) this.getComponent(PositionComponent.class).orElseThrow();
-        sc.addSkill(
-            new Skill(
-                new RangeCombatSkill(new BumerangProjectile()),
-                5f,
-                5));
-        sc.addSkill(
-            new Skill(
-                new RangeCombatSkill(new GummyBearProjectile()),
-                5f,
-                6));
+        PositionComponent pc =
+                (PositionComponent) this.getComponent(PositionComponent.class).orElseThrow();
+        sc.addSkill(new Skill(new RangeCombatSkill(new BumerangProjectile()), 5f, 5));
+        sc.addSkill(new Skill(new RangeCombatSkill(new GummyBearProjectile()), 5f, 6));
     }
 
     private void setupVelocityComponent() {
@@ -120,30 +109,54 @@ public class Hero extends Entity implements ILevelUp {
         new XPComponent(this, this);
     }
 
-    private void setupInventoryComponent(){
+    private void setupInventoryComponent() {
         new InventoryComponent(this, 10);
     }
 
+    /**
+     * Rustet den Helden mit einer Waffe aus
+     * @param pWeapon auszurüstende Waffe
+     */
     public void equippWeapon(Waffe pWeapon) {
         weapon = pWeapon;
     }
 
+    /**
+     * Rustet den Helden mit Schuhen aus
+     * @param pShoes auszurüstende Schuhe
+     */
     public void equippShoes(Schuhe pShoes) {
         shoes = pShoes;
     }
 
+    /**
+     * getter fuer die aktuelle Waffe des Helden
+     * @return aktuelle Waffe des Helden
+     */
     public Waffe getWeapon() {
         return weapon;
     }
 
+    /**
+     * getter fuer die aktuellen Schuhe des Helden
+     * @return aktuelle Schuhe des Helden
+     */
     public Schuhe getShoes() {
         return shoes;
     }
 
+    /**
+     * Setter fuer den Extraschaden
+     * @param pplusDmg neuer Extraschaden
+     */
     public void setplusDmg(int pplusDmg) {
         plusDmg = pplusDmg;
     }
 
+    /**
+     * Getter fuer den Extraschaden
+     * @return Extraschaden des Helden
+     */
     public int getplusDmg() {
         return plusDmg;
     }
@@ -162,20 +175,19 @@ public class Hero extends Entity implements ILevelUp {
 
         if (nexLevel == 2) {
             SkillComponent mySC =
-                (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
+                    (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             setupRangeCombatSkills(mySC);
             heroLogger.info(
-                "Fernkampf Angriffe freigeschaltet: "
-                    + "\n"
-                    + "Bumerang Angriff"
-                    + "\n"
-                    + "Taste: Q"
-                    + "\n"
-                    + "Gummiebaerchen Angriff"
-                    + "\n"
-                    + "Taste: R");
-        }
-        else if (nexLevel == 5) {
+                    "Fernkampf Angriffe freigeschaltet: "
+                            + "\n"
+                            + "Bumerang Angriff"
+                            + "\n"
+                            + "Taste: Q"
+                            + "\n"
+                            + "Gummiebaerchen Angriff"
+                            + "\n"
+                            + "Taste: R");
+        } else if (nexLevel == 5) {
             SkillComponent mySC =
                     (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             mySC.addSkill(new Skill(new HealingSkill(), healCoolDown, 2));

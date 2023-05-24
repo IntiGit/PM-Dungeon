@@ -5,7 +5,6 @@ import ecs.components.*;
 import ecs.components.ai.AIComponent;
 import ecs.components.ai.idle.FleeFromHero;
 import graphic.Animation;
-
 import java.util.List;
 
 /** Klasse die das Monster Necromancer darstellt */
@@ -65,10 +64,10 @@ public class Necromancer extends Monster {
     @Override
     void setupHealthComponent() {
         new HealthComponent(
-            this,
-            15,
-            (e) -> {},
-            new Animation(List.of("necromancer_anim_f0.png"), 300),
-            new Animation(List.of("necromancer_anim_f0.png"), 300));
+                this,
+                15,
+                (e) -> {},
+                new Animation(List.of("necromancer_anim_f0.png"), 300),
+                new Animation(List.of("necromancer_anim_f0.png"), 300));
     }
 }

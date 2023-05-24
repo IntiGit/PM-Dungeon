@@ -33,7 +33,6 @@ import graphic.hud.GameOverMenu;
 import graphic.hud.PauseMenu;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import level.IOnLevelLoader;
 import level.LevelAPI;
@@ -43,7 +42,6 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
-import logging.CustomLogLevel;
 import tools.Constants;
 import tools.Point;
 
@@ -188,8 +186,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
         heroXPCom.addXP(50);
-        gameLogger.info("\nXP: " + heroXPCom.getCurrentXP() + "\n" +
-                        "LVL: " + heroXPCom.getCurrentLevel());
+        gameLogger.info(
+                "\nXP: " + heroXPCom.getCurrentXP() + "\n" + "LVL: " + heroXPCom.getCurrentLevel());
     }
 
     private void manageEntitiesSets() {
@@ -259,28 +257,38 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private void toggleInventory() {
         inventoryOpen = !inventoryOpen;
-        if(inventoryOpen) {
-            InventoryComponent ic = (InventoryComponent) getHero().get().getComponent(InventoryComponent.class).orElseThrow();
+        if (inventoryOpen) {
+            InventoryComponent ic =
+                    (InventoryComponent)
+                            getHero().get().getComponent(InventoryComponent.class).orElseThrow();
             StringBuilder logMessageInventory = new StringBuilder();
             for (int i = 0; i < ic.filledSlots(); i++) {
-                logMessageInventory.append(i).append(": ").append(ic.getItems().get(i).getItemName()).append("\n");
+                logMessageInventory
+                        .append(i)
+                        .append(": ")
+                        .append(ic.getItems().get(i).getItemName())
+                        .append("\n");
             }
             gameLogger.info("\n" + logMessageInventory);
             int inputInv = sc.nextInt();
-            if(inputInv >= 0 && inputInv < ic.filledSlots()) {
+            if (inputInv >= 0 && inputInv < ic.filledSlots()) {
                 ItemData item = ic.getItems().get(inputInv);
-                if(item instanceof Trank) {
+                if (item instanceof Trank) {
                     item.triggerUse(getHero().get());
-                } else if(item instanceof Waffe || item instanceof Schuhe) {
+                } else if (item instanceof Waffe || item instanceof Schuhe) {
                     ((IToggleEquipp) item).toggleEquipp(getHero().get());
-                } else if(item instanceof Tasche<?> bag) {
+                } else if (item instanceof Tasche<?> bag) {
                     StringBuilder logMessageBag = new StringBuilder();
                     for (int i = 0; i < bag.getItemsInBag().size(); i++) {
-                        logMessageBag.append("    ").append(i).append(": ").append(bag.getItemsInBag().get(i).getItemName());
+                        logMessageBag
+                                .append("    ")
+                                .append(i)
+                                .append(": ")
+                                .append(bag.getItemsInBag().get(i).getItemName());
                     }
-                    if(!bag.isEmpty()) {
+                    if (!bag.isEmpty()) {
                         int in = sc.nextInt();
-                        if(in >= 0 && in < bag.getItemsInBag().size()) {
+                        if (in >= 0 && in < bag.getItemsInBag().size()) {
                             ItemData bagItem = bag.getItemsInBag().get(in);
                             if (bagItem instanceof Trank) {
                                 bagItem.triggerUse(getHero().get());
@@ -294,9 +302,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         }
     }
 
-    /**
-     * Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück
-     */
+    /** Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück */
     public static void activateGameOver() {
         gameover.showMenu();
         playerDied = true;
@@ -441,7 +447,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private void generateItems() {
         Random rng = new Random();
         int amount = rng.nextInt(4);
-        while(amount != 0) {
+        while (amount != 0) {
             ItemData item = itemFactory.getRandomItem();
             entities.add(WorldItemBuilder.buildWorldItem(item));
             amount--;

@@ -12,8 +12,15 @@ import graphic.Animation;
 import level.elements.tile.Tile;
 import starter.Game;
 
-public class Gift extends Falle{
+/**
+ * Klasse die eine Giftfalle darstellt
+ */
+public class Gift extends Falle {
 
+    /**
+     * Konstruktor fuer die Klasse Gift
+     * @param pDmg Schaden der Falle
+     */
     public Gift(int pDmg) {
         trapDmg = pDmg;
         active = true;
@@ -46,10 +53,11 @@ public class Gift extends Falle{
     public void onCollision(Entity a, Entity b, Tile.Direction from) {
         if (b != Game.getHero().get()) {
             b.getComponent(HealthComponent.class)
-                .ifPresent(
-                    hc -> {
-                        ((HealthComponent) hc).receiveHit(new Damage(trapDmg, DamageType.NEUTRAL, null));
-                    });
+                    .ifPresent(
+                            hc -> {
+                                ((HealthComponent) hc)
+                                        .receiveHit(new Damage(trapDmg, DamageType.NEUTRAL, null));
+                            });
         }
     }
 }

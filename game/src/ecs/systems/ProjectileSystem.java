@@ -30,34 +30,41 @@ public class ProjectileSystem extends ECS_System {
                                         psd.prc.getGoalLocation(),
                                         psd.pc.getPosition()))
                 // Remove all entities who reached their endpoint
-                .forEach((psd)-> {
-                    if(psd.e instanceof BumerangProjectile b) {
-                        Hero h = (Hero) Game.getHero().get();
-                        PositionComponent pcHero =
-                            (PositionComponent) h.getComponent(PositionComponent.class).orElseThrow();
+                .forEach(
+                        (psd) -> {
+                            if (psd.e instanceof BumerangProjectile b) {
+                                Hero h = (Hero) Game.getHero().get();
+                                PositionComponent pcHero =
+                                        (PositionComponent)
+                                                h.getComponent(PositionComponent.class)
+                                                        .orElseThrow();
 
-                        Entity projectile;
-                        Point start = psd.pc.getPosition();
+                                Entity projectile;
+                                Point start = psd.pc.getPosition();
 
-                        projectile = new BumerangProjectile(
-                            3,
-                            "character/knight/attack/bumerang",
-                            5f,
-                            0.3f,
-                            start,
-                            true);
+                                projectile =
+                                        new BumerangProjectile(
+                                                3,
+                                                "character/knight/attack/bumerang",
+                                                5f,
+                                                0.3f,
+                                                start,
+                                                true);
 
-                        ((BumerangProjectile) projectile).setupPositionComponent(psd.pc.getPosition());
-                        ((BumerangProjectile) projectile).setupVelocityAndProjectileComponent(psd.pc, pcHero.getPosition());
-                        ((BumerangProjectile) projectile).setupAnimationComponent();
-                        ((BumerangProjectile) projectile).setupHitboxComponent();
+                                ((BumerangProjectile) projectile)
+                                        .setupPositionComponent(psd.pc.getPosition());
+                                ((BumerangProjectile) projectile)
+                                        .setupVelocityAndProjectileComponent(
+                                                psd.pc, pcHero.getPosition());
+                                ((BumerangProjectile) projectile).setupAnimationComponent();
+                                ((BumerangProjectile) projectile).setupHitboxComponent();
 
-                        this.removeEntitiesOnEndpoint(psd);
-                        Game.addEntity(projectile);
-                    } else {
-                        this.removeEntitiesOnEndpoint(psd);
-                    }
-                });
+                                this.removeEntitiesOnEndpoint(psd);
+                                Game.addEntity(projectile);
+                            } else {
+                                this.removeEntitiesOnEndpoint(psd);
+                            }
+                        });
     }
 
     private PSData buildDataObject(ProjectileComponent prc) {

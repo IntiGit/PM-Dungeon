@@ -5,7 +5,6 @@ import ecs.components.*;
 import ecs.components.ai.AIComponent;
 import ecs.components.ai.idle.RadiusWalk;
 import graphic.Animation;
-
 import java.util.List;
 
 /** Klasse die das Monster Daemon darstellt */
@@ -65,10 +64,10 @@ public class Daemon extends Monster {
     @Override
     void setupHealthComponent() {
         new HealthComponent(
-            this,
-            10,
-            (e) -> {},
-            new Animation(List.of("chort_idle_anim_f0.png"), 300),
-            new Animation(List.of("chort_idle_anim_f0.png"), 300));
+                this,
+                10,
+                (e) -> {},
+                new Animation(List.of("chort_idle_anim_f0.png"), 300),
+                new Animation(List.of("chort_idle_anim_f0.png"), 300));
     }
 }
