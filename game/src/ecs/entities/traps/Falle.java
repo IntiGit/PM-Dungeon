@@ -14,7 +14,6 @@ public abstract class Falle extends Entity implements ICollide {
 
     /** Pfade zu den Animationen der Falle */
     protected String pathToAnimationActive;
-
     protected String pathToAnimationInactive;
 
     /** Erstellt die PositionComponent für das Monster */
