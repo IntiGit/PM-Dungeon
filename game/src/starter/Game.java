@@ -12,6 +12,7 @@ import configuration.Configuration;
 import configuration.KeyboardConfig;
 import controller.AbstractController;
 import controller.SystemController;
+import ecs.components.InventoryComponent;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.xp.XPComponent;
@@ -24,6 +25,7 @@ import ecs.entities.monsters.Necromancer;
 import ecs.entities.monsters.Skelett;
 import ecs.entities.traps.Loch;
 import ecs.entities.traps.Schleim;
+import ecs.items.*;
 import ecs.systems.*;
 import graphic.DungeonCamera;
 import graphic.Painter;
@@ -68,6 +70,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private boolean doSetup = true;
     private static boolean paused = false;
     private static boolean playerDied = false;
+    private boolean inventoryOpen = false;
 
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
@@ -84,11 +87,14 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private static GameOverMenu<Actor> gameover;
     private static Entity hero;
     private Logger gameLogger;
+    private Scanner sc = new Scanner(System.in);
 
     public static float difficulty = 1f;
 
     public static boolean hasGhost = false;
     private int levelCount = 0;
+
+    private ItemFactory itemFactory = new ItemFactory();
 
     public static void main(String[] args) {
         // start the game
@@ -145,6 +151,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         manageEntitiesSets();
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
+        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
         if (playerDied && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             System.exit(0);
         }
@@ -168,6 +175,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         generateTraps();
 
+        generateItems();
+
         if (levelCount % 5 == 0) {
             hasGhost = true;
         } else {
@@ -177,8 +186,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
         heroXPCom.addXP(50);
-        System.out.println("XP: " + heroXPCom.getCurrentXP());
-        System.out.println("LVL: " + heroXPCom.getCurrentLevel());
+        gameLogger.info(
+                "\nXP: " + heroXPCom.getCurrentXP() + "\n" + "LVL: " + heroXPCom.getCurrentLevel());
     }
 
     private void manageEntitiesSets() {
@@ -246,9 +255,54 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         }
     }
 
-    /**
-     * Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück
-     */
+    private void toggleInventory() {
+        inventoryOpen = !inventoryOpen;
+        if (inventoryOpen) {
+            InventoryComponent ic =
+                    (InventoryComponent)
+                            getHero().get().getComponent(InventoryComponent.class).orElseThrow();
+            StringBuilder logMessageInventory = new StringBuilder();
+            for (int i = 0; i < ic.filledSlots(); i++) {
+                logMessageInventory
+                        .append(i)
+                        .append(": ")
+                        .append(ic.getItems().get(i).getItemName())
+                        .append("\n");
+            }
+            gameLogger.info("\n" + logMessageInventory);
+            int inputInv = sc.nextInt();
+            if (inputInv >= 0 && inputInv < ic.filledSlots()) {
+                ItemData item = ic.getItems().get(inputInv);
+                if (item instanceof Trank) {
+                    item.triggerUse(getHero().get());
+                } else if (item instanceof Waffe || item instanceof Schuhe) {
+                    ((IToggleEquipp) item).toggleEquipp(getHero().get());
+                } else if (item instanceof Tasche<?> bag) {
+                    StringBuilder logMessageBag = new StringBuilder();
+                    for (int i = 0; i < bag.getItemsInBag().size(); i++) {
+                        logMessageBag
+                                .append("    ")
+                                .append(i)
+                                .append(": ")
+                                .append(bag.getItemsInBag().get(i).getItemName());
+                    }
+                    if (!bag.isEmpty()) {
+                        int in = sc.nextInt();
+                        if (in >= 0 && in < bag.getItemsInBag().size()) {
+                            ItemData bagItem = bag.getItemsInBag().get(in);
+                            if (bagItem instanceof Trank) {
+                                bagItem.triggerUse(getHero().get());
+                            } else if (bagItem instanceof Waffe || bagItem instanceof Schuhe) {
+                                ((IToggleEquipp) bagItem).toggleEquipp(getHero().get());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /** Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück */
     public static void activateGameOver() {
         gameover.showMenu();
         playerDied = true;
@@ -387,6 +441,16 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
             entities.add(geist);
             entities.add(grabstein);
+        }
+    }
+
+    private void generateItems() {
+        Random rng = new Random();
+        int amount = rng.nextInt(4);
+        while (amount != 0) {
+            ItemData item = itemFactory.getRandomItem();
+            entities.add(WorldItemBuilder.buildWorldItem(item));
+            amount--;
         }
     }
 }

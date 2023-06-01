@@ -16,14 +16,19 @@ import ecs.components.skill.HealingSkill;
 import ecs.components.skill.SpeedSkill;
 import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
+import ecs.items.Schuhe;
+import ecs.items.Waffe;
 import graphic.Animation;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * The Hero is the player character. It's entity in the ECS. This class helps to setup the hero with
  * all its components and attributes .
  */
 public class Hero extends Entity implements ILevelUp {
+
+    private final Logger heroLogger = Logger.getLogger(this.getClass().getName());
 
     private final int fireballCoolDown = 5;
     private final int healCoolDown = 30;
@@ -36,6 +41,11 @@ public class Hero extends Entity implements ILevelUp {
     private final String pathToRunLeft = "knight/runLeft";
     private final String pathToRunRight = "knight/runRight";
 
+    private Waffe weapon;
+    private Schuhe shoes;
+
+    private int plusDmg = 1;
+
     /** Entity with Components */
     public Hero() {
         super();
@@ -47,6 +57,7 @@ public class Hero extends Entity implements ILevelUp {
         new PlayableComponent(this);
         setupHealthComponent();
         setupXPComponent();
+        setupInventoryComponent();
     }
 
     private void setupSkillComponent() {
@@ -56,6 +67,22 @@ public class Hero extends Entity implements ILevelUp {
                         new FireballSkill(SkillTools::getCursorPositionAsPoint),
                         fireballCoolDown,
                         1));
+        setupCloseCombatSkill(sc);
+    }
+
+    /**
+     * Fuegt dem Skillset des Helden den Nahkampf Skill hinzu
+     * @param sc Skillcomponent
+     */
+    public void setupCloseCombatSkill(SkillComponent sc) {
+        sc.addSkill(new Skill(new CloseCombatSkill(1, weapon, "", 1f, 0.05f), 1, 4));
+    }
+
+    private void setupRangeCombatSkills(SkillComponent sc) {
+        PositionComponent pc =
+                (PositionComponent) this.getComponent(PositionComponent.class).orElseThrow();
+        sc.addSkill(new Skill(new RangeCombatSkill(new BumerangProjectile()), 5f, 5));
+        sc.addSkill(new Skill(new RangeCombatSkill(new GummyBearProjectile()), 5f, 6));
     }
 
     private void setupVelocityComponent() {
@@ -73,8 +100,8 @@ public class Hero extends Entity implements ILevelUp {
     private void setupHitboxComponent() {
         new HitboxComponent(
                 this,
-                (you, other, direction) -> System.out.println("heroCollisionEnter"),
-                (you, other, direction) -> System.out.println("heroCollisionLeave"));
+                (you, other, direction) -> heroLogger.info("heroCollisionEnter"),
+                (you, other, direction) -> heroLogger.info("heroCollisionLeave"));
     }
 
     private void setupHealthComponent() {
@@ -93,23 +120,89 @@ public class Hero extends Entity implements ILevelUp {
         new XPComponent(this, this);
     }
 
+    private void setupInventoryComponent() {
+        new InventoryComponent(this, 10);
+    }
+
+    /**
+     * Rustet den Helden mit einer Waffe aus
+     * @param pWeapon auszurüstende Waffe
+     */
+    public void equippWeapon(Waffe pWeapon) {
+        weapon = pWeapon;
+    }
+
+    /**
+     * Rustet den Helden mit Schuhen aus
+     * @param pShoes auszurüstende Schuhe
+     */
+    public void equippShoes(Schuhe pShoes) {
+        shoes = pShoes;
+    }
+
+    /**
+     * getter fuer die aktuelle Waffe des Helden
+     * @return aktuelle Waffe des Helden
+     */
+    public Waffe getWeapon() {
+        return weapon;
+    }
+
+    /**
+     * getter fuer die aktuellen Schuhe des Helden
+     * @return aktuelle Schuhe des Helden
+     */
+    public Schuhe getShoes() {
+        return shoes;
+    }
+
+    /**
+     * Setter fuer den Extraschaden
+     * @param pplusDmg neuer Extraschaden
+     */
+    public void setplusDmg(int pplusDmg) {
+        plusDmg = pplusDmg;
+    }
+
+    /**
+     * Getter fuer den Extraschaden
+     * @return Extraschaden des Helden
+     */
+    public int getplusDmg() {
+        return plusDmg;
+    }
+
     @Override
     /**
      * Level Up verhalten des Helden Erhöht die maximalen Lebenspunkte des Helden Bei Level 5 bzw.
      * 10 werden neue Skills freigeschaltet
      */
     public void onLevelUp(long nexLevel) {
-        System.out.println("Levelaustieg zu Level " + nexLevel);
+        heroLogger.info("Levelaustieg zu Level " + nexLevel);
         HealthComponent myHC =
                 (HealthComponent) this.getComponent(HealthComponent.class).orElseThrow();
         int bonus = nexLevel % 5 == 0 ? 1 : 0;
         myHC.setMaximalHealthpoints(myHC.getMaximalHealthpoints() + bonus + 1);
 
-        if (nexLevel == 5) {
+        if (nexLevel == 2) {
+            SkillComponent mySC =
+                    (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
+            setupRangeCombatSkills(mySC);
+            heroLogger.info(
+                    "Fernkampf Angriffe freigeschaltet: "
+                            + "\n"
+                            + "Bumerang Angriff"
+                            + "\n"
+                            + "Taste: Q"
+                            + "\n"
+                            + "Gummiebaerchen Angriff"
+                            + "\n"
+                            + "Taste: R");
+        } else if (nexLevel == 5) {
             SkillComponent mySC =
                     (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             mySC.addSkill(new Skill(new HealingSkill(), healCoolDown, 2));
-            System.out.println(
+            heroLogger.info(
                     "Heilungszauber freigeschaltet: "
                             + "\n"
                             + "Heilt dich um 30% bis 50% deiner maximalen Leben"
@@ -125,7 +218,7 @@ public class Hero extends Entity implements ILevelUp {
                     (SkillComponent) this.getComponent(SkillComponent.class).orElseThrow();
             mySC.addSkill(new Skill(new SpeedSkill(3), speedCoolDown, 3));
 
-            System.out.println(
+            heroLogger.info(
                     "Geschwindigkeitszauber freigeschaltet: "
                             + "\n"
                             + "Erhoeht oder verringert deine Geschwindigkeit zufaellig"
