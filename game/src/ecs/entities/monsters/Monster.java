@@ -10,7 +10,6 @@ public abstract class Monster extends Entity {
 
     /** Pfade zu den Animationen der Monster */
     protected String pathToIdleLeft;
-
     protected String pathToIdleRight;
     protected String pathToRunLeft;
     protected String pathToRunRight;
