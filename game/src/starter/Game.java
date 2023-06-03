@@ -286,6 +286,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
                                 .append(": ")
                                 .append(bag.getItemsInBag().get(i).getItemName());
                     }
+                    gameLogger.info(logMessageBag.toString());
                     if (!bag.isEmpty()) {
                         int in = sc.nextInt();
                         if (in >= 0 && in < bag.getItemsInBag().size()) {
