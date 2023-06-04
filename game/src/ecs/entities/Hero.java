@@ -8,7 +8,11 @@ import ecs.components.xp.XPComponent;
 import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
+import graphic.hud.statDisplay.IHudElement;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -34,6 +38,8 @@ public class Hero extends Entity implements ILevelUp {
     private Schuhe shoes;
 
     private int plusDmg = 1;
+
+    private Set<IHudElement> observer = new HashSet<>();
 
     /** Entity with Components */
     public Hero() {
@@ -159,6 +165,16 @@ public class Hero extends Entity implements ILevelUp {
      */
     public int getplusDmg() {
         return plusDmg;
+    }
+
+    public void register(IHudElement hudElement) {
+        observer.add(hudElement);
+    }
+
+    private void notifyObservers() {
+        for(IHudElement o : observer) {
+            o.update(this);
+        }
     }
 
     @Override
