@@ -20,6 +20,7 @@ import ecs.entities.Entity;
 import ecs.entities.Geist;
 import ecs.entities.Grabstein;
 import ecs.entities.Hero;
+import ecs.entities.monsters.ChestMonster;
 import ecs.entities.monsters.Daemon;
 import ecs.entities.monsters.Necromancer;
 import ecs.entities.monsters.Skelett;
@@ -94,7 +95,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     public static boolean hasGhost = false;
     private int levelCount = 0;
 
-    private ItemFactory itemFactory = new ItemFactory();
+    public static ItemFactory itemFactory = new ItemFactory();
 
     public static void main(String[] args) {
         // start the game
@@ -173,16 +174,16 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         generateMonsters();
         difficulty += 0.1;
 
-        generateTraps();
+        //generateTraps();
 
-        generateItems();
+        //generateItems();
 
         if (levelCount % 5 == 0) {
             hasGhost = true;
         } else {
             hasGhost = false;
         }
-        generateGhost();
+        //generateGhost();
 
         XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
         heroXPCom.addXP(50);
@@ -396,7 +397,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     }
 
     private void generateMonsters() {
-        Random randomMons = new Random();
+        entities.add(new ChestMonster(itemFactory.getRandomItem()));
+        /*Random randomMons = new Random();
         int monsterAmount =
                 (int) Math.floor(randomMons.nextFloat(3 * difficulty, 5.1f * difficulty));
         while (monsterAmount > 0) {
@@ -412,8 +414,12 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             } else if (randomNum >= 0.0 && difficulty > 2.0) {
                 entities.add(new Necromancer());
                 monsterAmount--;
+
             }
+
         }
+
+         */
     }
 
     private void generateTraps() {

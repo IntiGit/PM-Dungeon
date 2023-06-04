@@ -170,6 +170,7 @@ public class ItemData {
         new PositionComponent(droppedItem, position);
         new AnimationComponent(droppedItem, which.getWorldTexture());
         HitboxComponent component = new HitboxComponent(droppedItem);
+        new ItemComponent(droppedItem, which);
         component.setiCollideEnter((a, b, direction) -> which.triggerCollect(a, b));
     }
 
