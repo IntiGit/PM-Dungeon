@@ -10,6 +10,10 @@ public class Lebensanzeige<T extends Actor> extends ScreenController<T> implemen
 
     private int hp = 10;
 
+    public Lebensanzeige() {
+        this(new SpriteBatch());
+    }
+
     /**
      * Creates a Screencontroller with a ScalingViewport which stretches the ScreenElements on
      * resize

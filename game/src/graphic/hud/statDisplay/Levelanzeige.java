@@ -10,6 +10,10 @@ public class Levelanzeige<T extends Actor> extends ScreenController<T> implement
 
     private int lvl = 0;
 
+    public Levelanzeige() {
+        this(new SpriteBatch());
+    }
+
     /**
      * Creates a Screencontroller with a ScalingViewport which stretches the ScreenElements on
      * resize
@@ -19,6 +23,7 @@ public class Levelanzeige<T extends Actor> extends ScreenController<T> implement
     public Levelanzeige(SpriteBatch batch) {
         super(batch);
     }
+
 
     @Override
     public void update(Entity e) {

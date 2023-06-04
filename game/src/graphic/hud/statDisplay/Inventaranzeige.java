@@ -9,6 +9,11 @@ import ecs.entities.Entity;
 public class Inventaranzeige<T extends Actor> extends ScreenController<T> implements IHudElement{
 
     InventoryComponent inventory;
+
+    public Inventaranzeige() {
+        this(new SpriteBatch());
+    }
+
     /**
      * Creates a Screencontroller with a ScalingViewport which stretches the ScreenElements on
      * resize

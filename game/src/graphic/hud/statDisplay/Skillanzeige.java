@@ -13,6 +13,10 @@ import java.util.Set;
 public class Skillanzeige<T extends Actor> extends ScreenController<T> implements IHudElement{
     private Set<Skill> skillSet = new HashSet<>();
 
+    public Skillanzeige() {
+        this(new SpriteBatch());
+    }
+
     /**
      * Creates a Screencontroller with a ScalingViewport which stretches the ScreenElements on
      * resize

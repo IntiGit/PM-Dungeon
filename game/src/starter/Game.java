@@ -35,6 +35,8 @@ import graphic.hud.PauseMenu;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+
+import graphic.hud.statDisplay.*;
 import level.IOnLevelLoader;
 import level.LevelAPI;
 import level.elements.ILevel;
@@ -83,9 +85,16 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     /** List of all Systems in the ECS */
     public static SystemController systems;
 
-    public static ILevel currentLevel;
+    // HUD Elemente
     private static PauseMenu<Actor> pauseMenu;
     private static GameOverMenu<Actor> gameover;
+    private static Lebensanzeige<Actor> lebensanzeige;
+    private static MonsterLebensanzeige<Actor> monsterLebensanzeige;
+    private static Levelanzeige<Actor> levelanzeige;
+    private static Skillanzeige<Actor> skillanzeige;
+    private static Inventaranzeige<Actor> inventaranzeige;
+
+    public static ILevel currentLevel;
     private static Entity hero;
     private Logger gameLogger;
     private Scanner sc = new Scanner(System.in);
@@ -136,20 +145,40 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         gameLogger = Logger.getLogger(this.getClass().getName());
         systems = new SystemController();
         controller.add(systems);
-        pauseMenu = new PauseMenu<>();
-        gameover = new GameOverMenu<>();
-        controller.add(pauseMenu);
-        controller.add(gameover);
         hero = new Hero();
         levelAPI = new LevelAPI(batch, painter, new WallGenerator(new RandomWalkGenerator()), this);
         levelAPI.loadLevel(LEVELSIZE);
         createSystems();
+        //HUD Elemente
+        pauseMenu = new PauseMenu<>();
+        gameover = new GameOverMenu<>();
+        lebensanzeige = new Lebensanzeige<>();
+        monsterLebensanzeige = new MonsterLebensanzeige<>();
+        levelanzeige = new Levelanzeige<>();
+        skillanzeige = new Skillanzeige<>();
+        inventaranzeige = new Inventaranzeige<>();
+
+        controller.add(pauseMenu);
+        controller.add(gameover);
+        controller.add(lebensanzeige);
+        controller.add(monsterLebensanzeige);
+        controller.add(levelanzeige);
+        controller.add(skillanzeige);
+        controller.add(inventaranzeige);
+
+        if(hero instanceof Hero h){
+            h.register(lebensanzeige);
+            h.register(levelanzeige);
+            h.register(skillanzeige);
+            h.register(inventaranzeige);
+        }
     }
 
     /** Called at the beginning of each frame. Before the controllers call <code>update</code>. */
     protected void frame() {
         setCameraFocus();
         manageEntitiesSets();
+        monsterLebensanzeige.update();
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();

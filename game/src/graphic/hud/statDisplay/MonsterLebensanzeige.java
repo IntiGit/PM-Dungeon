@@ -16,6 +16,10 @@ public class MonsterLebensanzeige<T extends Actor> extends ScreenController<T> i
 
     private Set<Monster> monster = new HashSet<>();
 
+    public MonsterLebensanzeige() {
+        this(new SpriteBatch());
+    }
+
     /**
      * Creates a Screencontroller with a ScalingViewport which stretches the ScreenElements on
      * resize
