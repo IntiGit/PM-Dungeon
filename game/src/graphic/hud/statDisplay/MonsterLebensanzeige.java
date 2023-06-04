@@ -1,6 +1,7 @@
 package graphic.hud.statDisplay;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import controller.ScreenController;
 import ecs.components.HealthComponent;
 import ecs.entities.Entity;
@@ -11,7 +12,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MonsterLebensanzeige extends ScreenController implements IHudElement {
+public class MonsterLebensanzeige<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private Set<Monster> monster = new HashSet<>();
 
@@ -32,5 +33,15 @@ public class MonsterLebensanzeige extends ScreenController implements IHudElemen
             .filter((m) -> m instanceof Monster)
             .map((mon) -> (Monster) mon)
             .collect(Collectors.toSet());
+    }
+
+    @Override
+    public void showMenu() {
+
+    }
+
+    @Override
+    public void hideMenu() {
+
     }
 }

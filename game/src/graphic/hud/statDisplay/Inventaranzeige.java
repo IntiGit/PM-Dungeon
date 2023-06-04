@@ -1,11 +1,12 @@
 package graphic.hud.statDisplay;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import controller.ScreenController;
 import ecs.components.InventoryComponent;
 import ecs.entities.Entity;
 
-public class Inventaranzeige extends ScreenController implements IHudElement{
+public class Inventaranzeige<T extends Actor> extends ScreenController<T> implements IHudElement{
 
     InventoryComponent inventory;
     /**
@@ -21,5 +22,15 @@ public class Inventaranzeige extends ScreenController implements IHudElement{
     @Override
     public void update(Entity e) {
         inventory = (InventoryComponent) e.getComponent(InventoryComponent.class).orElseThrow();
+    }
+
+    @Override
+    public void showMenu() {
+
+    }
+
+    @Override
+    public void hideMenu() {
+
     }
 }
