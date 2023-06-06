@@ -229,7 +229,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         entities.clear();
         getHero().ifPresent(this::placeOnLevelStart);
 
-        //generateMonsters();
+        generateMonsters();
         difficulty += 0.1;
 
         generateTraps();
@@ -241,7 +241,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         } else {
             hasGhost = false;
         }
-        //generateGhost();
+        generateGhost();
 
         XPComponent heroXPCom = (XPComponent) hero.getComponent(XPComponent.class).orElseThrow();
         heroXPCom.addXP(50);
@@ -334,53 +334,6 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
             inventaranzeige.hideMenu();
         }
-        /*inventoryOpen = !inventoryOpen;
-        if (inventoryOpen) {
-            InventoryComponent ic =
-                    (InventoryComponent)
-                            getHero().get().getComponent(InventoryComponent.class).orElseThrow();
-            StringBuilder logMessageInventory = new StringBuilder();
-            for (int i = 0; i < ic.filledSlots(); i++) {
-                logMessageInventory
-                        .append(i)
-                        .append(": ")
-                        .append(ic.getItems().get(i).getItemName())
-                        .append("\n");
-            }
-            gameLogger.info("\n" + logMessageInventory);
-            int inputInv = sc.nextInt();
-            if (inputInv >= 0 && inputInv < ic.filledSlots()) {
-                ItemData item = ic.getItems().get(inputInv);
-                if (item instanceof Trank) {
-                    item.triggerUse(getHero().get());
-                } else if (item instanceof Waffe || item instanceof Schuhe) {
-                    ((IToggleEquipp) item).toggleEquipp(getHero().get());
-                } else if (item instanceof Tasche<?> bag) {
-                    StringBuilder logMessageBag = new StringBuilder();
-                    for (int i = 0; i < bag.getItemsInBag().size(); i++) {
-                        logMessageBag
-                                .append("    ")
-                                .append(i)
-                                .append(": ")
-                                .append(bag.getItemsInBag().get(i).getItemName());
-                    }
-                    gameLogger.info(logMessageBag.toString());
-                    if (!bag.isEmpty()) {
-                        int in = sc.nextInt();
-                        if (in >= 0 && in < bag.getItemsInBag().size()) {
-                            ItemData bagItem = bag.getItemsInBag().get(in);
-                            if (bagItem instanceof Trank) {
-                                bagItem.triggerUse(getHero().get());
-                            } else if (bagItem instanceof Waffe || bagItem instanceof Schuhe) {
-                                ((IToggleEquipp) bagItem).toggleEquipp(getHero().get());
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-         */
     }
 
     /** Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück */
@@ -530,7 +483,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private void generateItems() {
         Random rng = new Random();
-        int amount = 10;//rng.nextInt(4);
+        int amount = rng.nextInt(4);
         while (amount != 0) {
             ItemData item = itemFactory.getRandomItem();
             entities.add(WorldItemBuilder.buildWorldItem(item));

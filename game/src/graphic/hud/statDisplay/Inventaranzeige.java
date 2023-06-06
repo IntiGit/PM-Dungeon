@@ -121,6 +121,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
     public void useItem() {
         if(selectedItem instanceof Trank) {
             selectedItem.triggerUse(Game.getHero().get());
+            selectedItem = null;
             setupMenu();
         }
         else if(selectedItem instanceof Waffe || selectedItem instanceof Schuhe) {
