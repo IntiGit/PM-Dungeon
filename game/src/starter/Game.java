@@ -530,7 +530,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private void generateItems() {
         Random rng = new Random();
-        int amount = rng.nextInt(4);
+        int amount = 10;//rng.nextInt(4);
         while (amount != 0) {
             ItemData item = itemFactory.getRandomItem();
             entities.add(WorldItemBuilder.buildWorldItem(item));

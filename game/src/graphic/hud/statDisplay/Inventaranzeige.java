@@ -1,15 +1,23 @@
 package graphic.hud.statDisplay;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.StringBuilder;
 import controller.ScreenController;
 import ecs.components.InventoryComponent;
 import ecs.entities.Entity;
 import ecs.items.*;
+import graphic.hud.FontBuilder;
+import graphic.hud.LabelStyleBuilder;
 import graphic.hud.ScreenImage;
+import graphic.hud.ScreenText;
 import starter.Game;
+import tools.Constants;
 import tools.Point;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +29,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
     private int selectedIndex;
     private ItemData selectedItem;
     private Set<T> images = new HashSet<>();
+    private Set<T> text = new HashSet<>();
     private ScreenImage selection = new ScreenImage("hud/selected.png", new Point(0,0));
 
     public Inventaranzeige() {
@@ -38,7 +47,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
         hideMenu();
     }
 
-    public void setupMenu() {
+    private void setupMenu() {
         for(T t : images) {
             remove(t);
         }
@@ -63,7 +72,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
             selectedItem = inventory.getItems().get(0);
             selectedIndex = 0;
         }
-
+        showItemDescription();
         Game.bagOpen = false;
     }
 
@@ -73,6 +82,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
             selectedItem = inventory.getItems().get(selectedIndex);
             selection.setPosition(selectedIndex * 64, 32);
         }
+        showItemDescription();
     }
 
     public void selectPreviousItemHorizontal() {
@@ -84,6 +94,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
             selectedItem = inventory.getItems().get(selectedIndex);
             selection.setPosition(selectedIndex * 64, 32);
         }
+        showItemDescription();
     }
 
     public void selectNextItemVertical() {
@@ -92,6 +103,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
             selectedItem = (ItemData) bagInventory.get(selectedIndex);
             selection.setPosition(selection.getX(), 64 * (selectedIndex + 1) + 32);
         }
+        showItemDescription();
     }
 
     public void selectPreviousItemVertical() {
@@ -103,6 +115,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
             selectedItem = (ItemData) bagInventory.get(selectedIndex);
             selection.setPosition(selection.getX(), 64 * (selectedIndex+1) + 32);
         }
+        showItemDescription();
     }
 
     public void useItem() {
@@ -138,6 +151,68 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
             selectNextItemVertical();
             Game.bagOpen = true;
         }
+    }
+
+    private void showItemDescription() {
+        for(T t : text) {
+            remove(t);
+        }
+        text.clear();
+        if(selectedItem != null) {
+            ScreenText name =
+                createScreenText(3f, Color.LIGHT_GRAY, (Constants.WINDOW_WIDTH)/2f, (Constants.WINDOW_HEIGHT));
+            text.add((T) name);
+            add((T) name);
+
+            String[] descriptionParts =
+                selectedItem.getDescription().split(" ");
+            StringBuilder s = new StringBuilder();
+            float x = 0f;
+            for(int i = 0; i < descriptionParts.length; i++) {
+                s.append(descriptionParts[i] + " ");
+                if( (i+1) % 5 == 0 || i == descriptionParts.length - 1) {
+                    ScreenText description =
+                        new ScreenText(
+                            s.toString(),
+                            new Point(0, 0),
+                            2,
+                            new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
+                                .setFontcolor(Color.WHITE)
+                                .build());
+                    description.setFontScale(2f);
+                    if(i < 5) x = description.getWidth();
+                    float y = (Constants.WINDOW_HEIGHT) - description.getHeight() * description.getFontScaleY()
+                        - name.getHeight() * name.getFontScaleY();
+                    y = y - description.getHeight() * 2 * ( (i/5));
+
+                    description.setPosition(
+                        x,
+                        y,
+                        Align.center | Align.bottom);
+                    text.add((T) description);
+                    add((T) description);
+
+                    s.clear();
+                }
+            }
+        }
+    }
+
+    private ScreenText createScreenText(float fontScale, Color color, float xPos, float yPos) {
+        ScreenText name =
+            new ScreenText(
+                selectedItem.getItemName(),
+                new Point(0, 0),
+                fontScale,
+                new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
+                    .setFontcolor(color)
+                    .build());
+        name.setFontScale(fontScale);
+        name.setPosition(
+            xPos - name.getWidth(),
+            yPos - name.getHeight() * name.getFontScaleY(),
+            Align.center | Align.bottom);
+        return name;
     }
 
     @Override
