@@ -71,6 +71,7 @@ public class Hero extends Entity implements ILevelUp {
      */
     public void setupCloseCombatSkill(SkillComponent sc) {
         sc.addSkill(new Skill(new CloseCombatSkill(1, weapon, "", 1f, 0.05f), 1, 4));
+        notifyObservers();
     }
 
     private void setupRangeCombatSkills(SkillComponent sc) {
@@ -78,6 +79,7 @@ public class Hero extends Entity implements ILevelUp {
                 (PositionComponent) this.getComponent(PositionComponent.class).orElseThrow();
         sc.addSkill(new Skill(new RangeCombatSkill(new BumerangProjectile()), 5f, 5));
         sc.addSkill(new Skill(new RangeCombatSkill(new GummyBearProjectile()), 5f, 6));
+        notifyObservers();
     }
 
     private void setupVelocityComponent() {
@@ -171,7 +173,7 @@ public class Hero extends Entity implements ILevelUp {
         observer.add(hudElement);
     }
 
-    private void notifyObservers() {
+    public void notifyObservers() {
         for(IHudElement o : observer) {
             o.update(this);
         }
@@ -183,6 +185,7 @@ public class Hero extends Entity implements ILevelUp {
      * 10 werden neue Skills freigeschaltet
      */
     public void onLevelUp(long nexLevel) {
+        notifyObservers();
         heroLogger.info("Levelaustieg zu Level " + nexLevel);
         HealthComponent myHC =
                 (HealthComponent) this.getComponent(HealthComponent.class).orElseThrow();

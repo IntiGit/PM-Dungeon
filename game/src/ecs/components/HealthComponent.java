@@ -4,6 +4,7 @@ import com.badlogic.gdx.utils.Null;
 import ecs.damage.Damage;
 import ecs.damage.DamageType;
 import ecs.entities.Entity;
+import ecs.entities.Hero;
 import graphic.Animation;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import logging.CustomLogLevel;
 import semanticAnalysis.types.DSLContextMember;
 import semanticAnalysis.types.DSLType;
 import semanticAnalysis.types.DSLTypeMember;
+import starter.Game;
 
 /** The HealthComponent makes an entity vulnerable and killable */
 @DSLType(name = "health_component")
@@ -117,7 +119,13 @@ public class HealthComponent extends Component {
      * @param amount new amount of current health-points
      */
     public void setCurrentHealthpoints(int amount) {
+        int curHP = this.currentHealthpoints;
         this.currentHealthpoints = Math.min(maximalHealthpoints, amount);
+        if(Game.getHero().isPresent() && Game.getHero().get() instanceof Hero h) {
+            if(curHP != amount) {
+                h.notifyObservers();
+            }
+        }
     }
 
     /**

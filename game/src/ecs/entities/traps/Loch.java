@@ -73,15 +73,18 @@ public class Loch extends Falle {
                 SkillComponent sc =
                         (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
                 sc.getSkillSet().removeIf(s -> s.getSkillID() == 5 || s.getSkillID() == 6);
+                ((Hero) b).notifyObservers();
             }
             if (xpc.getCurrentLevel() < 5) {
                 SkillComponent sc =
                         (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
                 sc.getSkillSet().removeIf(s -> s.getSkillID() == 2);
+                ((Hero) b).notifyObservers();
             } else if (xpc.getCurrentLevel() < 10) {
                 SkillComponent sc =
                         (SkillComponent) b.getComponent(SkillComponent.class).orElseThrow();
                 sc.getSkillSet().removeIf(s -> s.getSkillID() == 3);
+                ((Hero) b).notifyObservers();
             }
             System.out.println("Abgestiegen zu Level " + xpc.getCurrentLevel());
 

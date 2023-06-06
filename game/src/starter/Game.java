@@ -12,7 +12,6 @@ import configuration.Configuration;
 import configuration.KeyboardConfig;
 import controller.AbstractController;
 import controller.SystemController;
-import ecs.components.InventoryComponent;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.xp.XPComponent;
@@ -74,6 +73,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private static boolean paused = false;
     private static boolean playerDied = false;
     private boolean inventoryOpen = false;
+    public static boolean bagOpen = false;
 
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
@@ -171,6 +171,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             h.register(levelanzeige);
             h.register(skillanzeige);
             h.register(inventaranzeige);
+            h.notifyObservers();
         }
     }
 
@@ -178,10 +179,31 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     protected void frame() {
         setCameraFocus();
         manageEntitiesSets();
-        monsterLebensanzeige.update();
+        monsterLebensanzeige.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
+        if(inventoryOpen && bagOpen) {
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
+                inventaranzeige.selectNextItemVertical();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_DOWN.get())) {
+                inventaranzeige.selectPreviousItemVertical();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_USE_ITEM.get())) {
+                inventaranzeige.useItem();
+            }
+        } else if(inventoryOpen) {
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_RIGHT.get())) {
+                inventaranzeige.selectNextItemHorizontal();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_LEFT.get())) {
+                inventaranzeige.selectPreviousItemHorizontal();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_USE_ITEM.get())) {
+                inventaranzeige.useItem();
+            }
+        }
         if (playerDied && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             System.exit(0);
         }
@@ -189,6 +211,13 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             playerDied = false;
             gameover.hideMenu();
             setHero(new Hero());
+            if(hero instanceof Hero h){
+                h.register(lebensanzeige);
+                h.register(levelanzeige);
+                h.register(skillanzeige);
+                h.register(inventaranzeige);
+                h.notifyObservers();
+            }
             levelAPI.loadLevel(LEVELSIZE);
         }
     }
@@ -200,12 +229,12 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         entities.clear();
         getHero().ifPresent(this::placeOnLevelStart);
 
-        generateMonsters();
+        //generateMonsters();
         difficulty += 0.1;
 
-        //generateTraps();
+        generateTraps();
 
-        //generateItems();
+        generateItems();
 
         if (levelCount % 5 == 0) {
             hasGhost = true;
@@ -287,6 +316,25 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private void toggleInventory() {
         inventoryOpen = !inventoryOpen;
+        if (systems != null) {
+            systems.forEach(ECS_System::toggleRun);
+        }
+        if(inventoryOpen) {
+            lebensanzeige.hideMenu();
+            monsterLebensanzeige.hideMenu();
+            levelanzeige.hideMenu();
+            skillanzeige.hideMenu();
+
+            inventaranzeige.showMenu();
+        } else {
+            lebensanzeige.showMenu();
+            monsterLebensanzeige.showMenu();
+            levelanzeige.showMenu();
+            skillanzeige.showMenu();
+
+            inventaranzeige.hideMenu();
+        }
+        /*inventoryOpen = !inventoryOpen;
         if (inventoryOpen) {
             InventoryComponent ic =
                     (InventoryComponent)
@@ -331,6 +379,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
                 }
             }
         }
+
+         */
     }
 
     /** Zeigt GameOverMenü an und setzt setzt Schwierigkeit zurück */
@@ -427,7 +477,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private void generateMonsters() {
         entities.add(new ChestMonster(itemFactory.getRandomItem()));
-        /*Random randomMons = new Random();
+        Random randomMons = new Random();
         int monsterAmount =
                 (int) Math.floor(randomMons.nextFloat(3 * difficulty, 5.1f * difficulty));
         while (monsterAmount > 0) {
@@ -447,8 +497,6 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             }
 
         }
-
-         */
     }
 
     private void generateTraps() {
