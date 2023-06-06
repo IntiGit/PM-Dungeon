@@ -72,7 +72,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private boolean doSetup = true;
     private static boolean paused = false;
     private static boolean playerDied = false;
-    private boolean inventoryOpen = false;
+    public static boolean inventoryOpen = false;
     public static boolean bagOpen = false;
 
     /** All entities that are currently active in the dungeon */

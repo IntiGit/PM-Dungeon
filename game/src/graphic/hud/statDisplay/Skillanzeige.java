@@ -12,6 +12,7 @@ import graphic.hud.FontBuilder;
 import graphic.hud.LabelStyleBuilder;
 import graphic.hud.ScreenImage;
 import graphic.hud.ScreenText;
+import starter.Game;
 import tools.Constants;
 import tools.Point;
 import java.util.HashSet;
@@ -76,6 +77,11 @@ public class Skillanzeige<T extends Actor> extends ScreenController<T> implement
             images.add((T) screenImage);
             add((T) screenImage);
             skillCount++;
+        }
+        if(Game.inventoryOpen) {
+            hideMenu();
+        } else {
+            showMenu();
         }
     }
 
