@@ -7,7 +7,9 @@ import com.badlogic.gdx.utils.Align;
 import controller.ScreenController;
 import ecs.components.HealthComponent;
 import ecs.components.PositionComponent;
+import ecs.components.ai.AIComponent;
 import ecs.entities.Entity;
+import ecs.entities.monsters.ChestMonster;
 import ecs.entities.monsters.Monster;
 import graphic.hud.FontBuilder;
 import graphic.hud.LabelStyleBuilder;
@@ -54,6 +56,12 @@ public class MonsterLebensanzeige<T extends Actor> extends ScreenController<T> i
             .collect(Collectors.toSet());
 
         for(Monster m : monster) {
+            if(m instanceof ChestMonster c) {
+                AIComponent aic = (AIComponent) c.getComponent(AIComponent.class).orElseThrow();
+                if(!aic.getTransitionAI().isInFightMode(m)) {
+                    continue;
+                }
+            }
             PositionComponent pc = (PositionComponent) m.getComponent(PositionComponent.class).orElseThrow();
             if( Game.camera.isPointInFrustum(pc.getPosition().x,pc.getPosition().y) ) {
                 Vector3 screenPosition = Game.camera.project(new Vector3(pc.getPosition().x,pc.getPosition().y,0f));
