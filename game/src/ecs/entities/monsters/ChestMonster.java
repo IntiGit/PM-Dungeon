@@ -5,12 +5,14 @@ import ecs.components.*;
 import ecs.components.ai.AIComponent;
 import ecs.components.ai.fight.CollideAI;
 import ecs.components.ai.transition.SelfDefendTransition;
+import ecs.damage.Damage;
+import ecs.damage.DamageType;
 import ecs.entities.Chest;
 import ecs.entities.Entity;
+import ecs.entities.Hero;
 import ecs.items.ItemData;
 import graphic.Animation;
 import starter.Game;
-import tools.Point;
 
 import java.util.List;
 
@@ -22,10 +24,10 @@ public class ChestMonster extends Monster implements IInteraction {
         loot = pLoot;
         speed = 0.15f;
 
-        pathToIdleLeft = "knight/idleLeft";
-        pathToIdleRight = "knight/idleRight";
-        pathToRunLeft = "knight/runLeft";
-        pathToRunRight = "knight/runRight";
+        pathToIdleLeft = "chestMonster/idleLeft";
+        pathToIdleRight = "chestMonster/idleRight";
+        pathToRunLeft = "chestMonster/runLeft";
+        pathToRunRight = "chestMonster/runRight";
 
         setupAnimationComponent();
         setupVelocityComponent();
@@ -57,7 +59,15 @@ public class ChestMonster extends Monster implements IInteraction {
 
     @Override
     void setupHitboxComponent() {
-        new HitboxComponent(this, (you, other, direction) -> {}, (you, other, direction) -> {});
+        new HitboxComponent(
+            this,
+            (you, other, direction) -> {
+                if(other instanceof Hero h) {
+                    HealthComponent hc = (HealthComponent) h.getComponent(HealthComponent.class).orElseThrow();
+                    hc.receiveHit(new Damage(1, DamageType.NEUTRAL,you));
+                }
+            },
+            (you, other, direction) -> {});
     }
 
     @Override
@@ -69,13 +79,13 @@ public class ChestMonster extends Monster implements IInteraction {
     void setupHealthComponent() {
         new HealthComponent(
             this,
-            12,
+            6,
             (e) -> {
                 PositionComponent pc = (PositionComponent) e.getComponent(PositionComponent.class).orElseThrow();
                 Game.addEntity(new Chest(List.of(loot), pc.getPosition()));
             },
-            new Animation(List.of("knight_m_hit_anim_f0.png"), 300),
-            new Animation(List.of("knight_m_hit_anim_f0.png"), 300));
+            new Animation(List.of("chestMonster/idleLeft/ChestMonster_anim_f0.png"), 300),
+            new Animation(List.of("chestMonster/idleLeft/ChestMonster_anim_f0.png"), 300));
     }
 
     private void setupInteractionComponent() {
