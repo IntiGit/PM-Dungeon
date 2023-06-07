@@ -12,14 +12,19 @@ import ecs.entities.Entity;
 import ecs.entities.Hero;
 import ecs.items.ItemData;
 import graphic.Animation;
+import java.util.List;
 import starter.Game;
 
-import java.util.List;
-
+/** Klasse die ein Kistenmonster darstellt. */
 public class ChestMonster extends Monster implements IInteraction {
 
     private final ItemData loot;
 
+    /**
+     * Konstruktor für das Kistenmonster
+     *
+     * @param pLoot Item, welches das Monster beim besiegen droppen soll
+     */
     public ChestMonster(ItemData pLoot) {
         loot = pLoot;
         speed = 0.15f;
@@ -60,36 +65,40 @@ public class ChestMonster extends Monster implements IInteraction {
     @Override
     void setupHitboxComponent() {
         new HitboxComponent(
-            this,
-            (you, other, direction) -> {
-                if(other instanceof Hero h) {
-                    HealthComponent hc = (HealthComponent) h.getComponent(HealthComponent.class).orElseThrow();
-                    hc.receiveHit(new Damage(1, DamageType.NEUTRAL,you));
-                }
-            },
-            (you, other, direction) -> {});
+                this,
+                (you, other, direction) -> {
+                    if (other instanceof Hero h) {
+                        HealthComponent hc =
+                                (HealthComponent)
+                                        h.getComponent(HealthComponent.class).orElseThrow();
+                        hc.receiveHit(new Damage(1, DamageType.NEUTRAL, you));
+                    }
+                },
+                (you, other, direction) -> {});
     }
 
     @Override
     void setupAIComponent() {
-        new AIComponent(this, new CollideAI(3f), (entity)-> {}, new SelfDefendTransition());
+        new AIComponent(this, new CollideAI(3f), (entity) -> {}, new SelfDefendTransition());
     }
 
     @Override
     void setupHealthComponent() {
         new HealthComponent(
-            this,
-            6,
-            (e) -> {
-                PositionComponent pc = (PositionComponent) e.getComponent(PositionComponent.class).orElseThrow();
-                Game.addEntity(new Chest(List.of(loot), pc.getPosition()));
-            },
-            new Animation(List.of("chestMonster/idleLeft/ChestMonster_anim_f0.png"), 300),
-            new Animation(List.of("chestMonster/idleLeft/ChestMonster_anim_f0.png"), 300));
+                this,
+                6,
+                (e) -> {
+                    PositionComponent pc =
+                            (PositionComponent)
+                                    e.getComponent(PositionComponent.class).orElseThrow();
+                    Game.addEntity(new Chest(List.of(loot), pc.getPosition()));
+                },
+                new Animation(List.of("chestMonster/idleLeft/ChestMonster_anim_f0.png"), 300),
+                new Animation(List.of("chestMonster/idleLeft/ChestMonster_anim_f0.png"), 300));
     }
 
     private void setupInteractionComponent() {
-        new InteractionComponent(this, Chest.defaultInteractionRadius,false, this);
+        new InteractionComponent(this, Chest.defaultInteractionRadius, false, this);
     }
 
     @Override

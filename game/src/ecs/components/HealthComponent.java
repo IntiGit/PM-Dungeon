@@ -121,8 +121,8 @@ public class HealthComponent extends Component {
     public void setCurrentHealthpoints(int amount) {
         int curHP = this.currentHealthpoints;
         this.currentHealthpoints = Math.min(maximalHealthpoints, amount);
-        if(Game.getHero().isPresent() && Game.getHero().get() instanceof Hero h) {
-            if(curHP != amount) {
+        if (Game.getHero().isPresent() && Game.getHero().get() instanceof Hero h) {
+            if (curHP != amount) {
                 h.notifyObservers();
             }
         }

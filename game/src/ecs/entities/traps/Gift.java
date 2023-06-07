@@ -12,13 +12,12 @@ import graphic.Animation;
 import level.elements.tile.Tile;
 import starter.Game;
 
-/**
- * Klasse die eine Giftfalle darstellt
- */
+/** Klasse die eine Giftfalle darstellt */
 public class Gift extends Falle {
 
     /**
      * Konstruktor fuer die Klasse Gift
+     *
      * @param pDmg Schaden der Falle
      */
     public Gift(int pDmg) {

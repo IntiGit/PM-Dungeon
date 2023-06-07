@@ -6,6 +6,7 @@ import java.util.List;
 
 /**
  * generische Klasse die den Item Typ Tasche darstellt
+ *
  * @param <T> Item Typ des Inhalts der Tasche
  */
 public class Tasche<T extends ItemData> extends ItemData {
@@ -16,6 +17,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Konstruktor fuer die Klasse Tasche
+     *
      * @param itemType
      * @param inventoryTexture
      * @param worldTexture
@@ -41,6 +43,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Fuegt ein Item der Tasche hinzu
+     *
      * @param item Item das hinzugefuegt werden soll
      */
     public void addItem(T item) {
@@ -51,6 +54,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Entfernt ein Item aus der Tasche
+     *
      * @param item Item das entfernt werden soll
      */
     public void removeItem(T item) {
@@ -59,6 +63,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Getter fuer den Inhalt der Tasche
+     *
      * @return Klasse des Inhalts
      */
     public Class<T> getContentType() {
@@ -67,6 +72,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Getter fuer den Tascheninhalt
+     *
      * @return Liste der Items in der Tasche
      */
     public List<T> getItemsInBag() {
@@ -75,6 +81,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Getter fuer die groesse der Tasche
+     *
      * @return groesse der Tasche
      */
     public int getBagSize() {
@@ -83,6 +90,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Ueberprueft ob die Tasche voll ist
+     *
      * @return true wenn die Tasche voll ist
      */
     public boolean isFull() {
@@ -91,6 +99,7 @@ public class Tasche<T extends ItemData> extends ItemData {
 
     /**
      * Ueberprueft ob die Tasche leer ist
+     *
      * @return true wenn die Tasche leer ist
      */
     public boolean isEmpty() {

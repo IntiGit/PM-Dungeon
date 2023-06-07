@@ -13,11 +13,17 @@ import graphic.hud.ScreenText;
 import tools.Constants;
 import tools.Point;
 
+/**
+ * Klasse welche eine graphische Levelanzeige für den Helden realisiert
+ *
+ * @param <T>
+ */
 public class Levelanzeige<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private int lvl = 0;
     private ScreenText levelText;
 
+    /** Konstruktor für die Klasse Levelanzeige */
     public Levelanzeige() {
         this(new SpriteBatch());
     }
@@ -31,23 +37,22 @@ public class Levelanzeige<T extends Actor> extends ScreenController<T> implement
     public Levelanzeige(SpriteBatch batch) {
         super(batch);
         levelText =
-            new ScreenText(
-                "Level: " + lvl,
-                new Point(0, 0),
-                3,
-                new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
-                    .setFontcolor(Color.CHARTREUSE)
-                    .build());
+                new ScreenText(
+                        "Level: " + lvl,
+                        new Point(0, 0),
+                        3,
+                        new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
+                                .setFontcolor(Color.CHARTREUSE)
+                                .build());
         levelText.setFontScale(2);
         levelText.setPosition(
-            levelText.getWidth() / 2,
-            Constants.WINDOW_HEIGHT - levelText.getHeight() * 2,
-            Align.center | Align.bottom);
+                levelText.getWidth() / 2,
+                Constants.WINDOW_HEIGHT - levelText.getHeight() * 2,
+                Align.center | Align.bottom);
         add((T) levelText);
 
         showMenu();
     }
-
 
     @Override
     public void update(Entity e) {

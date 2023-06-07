@@ -2,13 +2,12 @@ package ecs.items;
 
 import graphic.Animation;
 
-/**
- * Klasse die den Item Typ Trank darstellt
- */
+/** Klasse die den Item Typ Trank darstellt */
 public class Trank extends ItemData {
 
     /**
      * Konstruktor der Klasse Trank
+     *
      * @param itemType Item Typ des Items (Basic, Passive, Active)
      * @param inventoryTexture Textur des Items im Inventar
      * @param worldTexture Textur des Items im Spiel

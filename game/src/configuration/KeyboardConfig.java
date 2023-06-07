@@ -31,13 +31,21 @@ public class KeyboardConfig {
     public static final ConfigKey<Integer> RANGE_COMBAT_SKILL_2 =
             new ConfigKey<>(new String[] {"skill", "6"}, new ConfigIntValue(Input.Keys.R));
     public static final ConfigKey<Integer> INVENTORY_NAVIGATE_LEFT =
-        new ConfigKey<>(new String[] {"inventory", "selectLeftItem"}, new ConfigIntValue(Input.Keys.LEFT));
+            new ConfigKey<>(
+                    new String[] {"inventory", "selectLeftItem"},
+                    new ConfigIntValue(Input.Keys.LEFT));
     public static final ConfigKey<Integer> INVENTORY_NAVIGATE_RIGHT =
-        new ConfigKey<>(new String[] {"inventory", "selectRightItem"}, new ConfigIntValue(Input.Keys.RIGHT));
+            new ConfigKey<>(
+                    new String[] {"inventory", "selectRightItem"},
+                    new ConfigIntValue(Input.Keys.RIGHT));
     public static final ConfigKey<Integer> INVENTORY_NAVIGATE_UP =
-        new ConfigKey<>(new String[] {"inventory", "selectUpItem"}, new ConfigIntValue(Input.Keys.UP));
+            new ConfigKey<>(
+                    new String[] {"inventory", "selectUpItem"}, new ConfigIntValue(Input.Keys.UP));
     public static final ConfigKey<Integer> INVENTORY_NAVIGATE_DOWN =
-        new ConfigKey<>(new String[] {"inventory", "selectDownItem"}, new ConfigIntValue(Input.Keys.DOWN));
+            new ConfigKey<>(
+                    new String[] {"inventory", "selectDownItem"},
+                    new ConfigIntValue(Input.Keys.DOWN));
     public static final ConfigKey<Integer> INVENTORY_USE_ITEM =
-        new ConfigKey<>(new String[] {"inventory", "useItem"}, new ConfigIntValue(Input.Keys.ENTER));
+            new ConfigKey<>(
+                    new String[] {"inventory", "useItem"}, new ConfigIntValue(Input.Keys.ENTER));
 }

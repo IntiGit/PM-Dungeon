@@ -31,11 +31,10 @@ import graphic.DungeonCamera;
 import graphic.Painter;
 import graphic.hud.GameOverMenu;
 import graphic.hud.PauseMenu;
+import graphic.hud.statDisplay.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
-
-import graphic.hud.statDisplay.*;
 import level.IOnLevelLoader;
 import level.LevelAPI;
 import level.elements.ILevel;
@@ -72,7 +71,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private boolean doSetup = true;
     private static boolean paused = false;
     private static boolean playerDied = false;
+    /** Variable um anzuzeigen ob gerade das Inventar offen ist */
     public static boolean inventoryOpen = false;
+    /** Variable um anzuzeigen ob gerade eine Tasche offen ist */
     public static boolean bagOpen = false;
 
     /** All entities that are currently active in the dungeon */
@@ -149,7 +150,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         levelAPI = new LevelAPI(batch, painter, new WallGenerator(new RandomWalkGenerator()), this);
         levelAPI.loadLevel(LEVELSIZE);
         createSystems();
-        //HUD Elemente
+        // HUD Elemente
         pauseMenu = new PauseMenu<>();
         gameover = new GameOverMenu<>();
         lebensanzeige = new Lebensanzeige<>();
@@ -166,7 +167,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         controller.add(skillanzeige);
         controller.add(inventaranzeige);
 
-        if(hero instanceof Hero h){
+        if (hero instanceof Hero h) {
             h.register(lebensanzeige);
             h.register(levelanzeige);
             h.register(skillanzeige);
@@ -183,7 +184,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
-        if(inventoryOpen && bagOpen) {
+        if (inventoryOpen && bagOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
                 inventaranzeige.selectNextItemVertical();
             }
@@ -193,7 +194,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_USE_ITEM.get())) {
                 inventaranzeige.useItem();
             }
-        } else if(inventoryOpen) {
+        } else if (inventoryOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_RIGHT.get())) {
                 inventaranzeige.selectNextItemHorizontal();
             }
@@ -211,7 +212,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             playerDied = false;
             gameover.hideMenu();
             setHero(new Hero());
-            if(hero instanceof Hero h){
+            if (hero instanceof Hero h) {
                 h.register(lebensanzeige);
                 h.register(levelanzeige);
                 h.register(skillanzeige);
@@ -319,7 +320,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         if (systems != null) {
             systems.forEach(ECS_System::toggleRun);
         }
-        if(inventoryOpen) {
+        if (inventoryOpen) {
             lebensanzeige.hideMenu();
             monsterLebensanzeige.hideMenu();
             levelanzeige.hideMenu();
@@ -446,9 +447,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             } else if (randomNum >= 0.0 && difficulty > 2.0) {
                 entities.add(new Necromancer());
                 monsterAmount--;
-
             }
-
         }
     }
 

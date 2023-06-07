@@ -4,13 +4,12 @@ import ecs.entities.Entity;
 import ecs.entities.Hero;
 import graphic.Animation;
 
-/**
- * Klasse die den Item Typ Schuhe darstellt
- */
+/** Klasse die den Item Typ Schuhe darstellt */
 public class Schuhe extends ItemData implements IToggleEquipp {
 
     /**
      * Konstruktor fuer die Klasse Schuhe
+     *
      * @param itemType Item Typ des Items (Basic, Passive, Active)
      * @param inventoryTexture Textur des Items im Inventar
      * @param worldTexture Textur des Items im Spiel
@@ -29,6 +28,7 @@ public class Schuhe extends ItemData implements IToggleEquipp {
 
     /**
      * Implementiert das ausruesten von Schuhen
+     *
      * @param e Entity die das Item ausruestet
      */
     @Override

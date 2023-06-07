@@ -9,7 +9,6 @@ import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
 import graphic.hud.statDisplay.IHudElement;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,6 +66,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Fuegt dem Skillset des Helden den Nahkampf Skill hinzu
+     *
      * @param sc Skillcomponent
      */
     public void setupCloseCombatSkill(SkillComponent sc) {
@@ -123,6 +123,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Rustet den Helden mit einer Waffe aus
+     *
      * @param pWeapon auszurüstende Waffe
      */
     public void equippWeapon(Waffe pWeapon) {
@@ -131,6 +132,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Rustet den Helden mit Schuhen aus
+     *
      * @param pShoes auszurüstende Schuhe
      */
     public void equippShoes(Schuhe pShoes) {
@@ -139,6 +141,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * getter fuer die aktuelle Waffe des Helden
+     *
      * @return aktuelle Waffe des Helden
      */
     public Waffe getWeapon() {
@@ -147,6 +150,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * getter fuer die aktuellen Schuhe des Helden
+     *
      * @return aktuelle Schuhe des Helden
      */
     public Schuhe getShoes() {
@@ -155,6 +159,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Setter fuer den Extraschaden
+     *
      * @param pplusDmg neuer Extraschaden
      */
     public void setplusDmg(int pplusDmg) {
@@ -163,18 +168,25 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Getter fuer den Extraschaden
+     *
      * @return Extraschaden des Helden
      */
     public int getplusDmg() {
         return plusDmg;
     }
 
+    /**
+     * Registriert einen Observer beim Hero
+     *
+     * @param hudElement Hud Element welches den Helden observiert
+     */
     public void register(IHudElement hudElement) {
         observer.add(hudElement);
     }
 
+    /** Banachrichtigt alle Observer des Helden */
     public void notifyObservers() {
-        for(IHudElement o : observer) {
+        for (IHudElement o : observer) {
             o.update(this);
         }
     }

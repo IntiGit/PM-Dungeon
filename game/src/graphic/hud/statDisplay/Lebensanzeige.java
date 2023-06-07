@@ -11,14 +11,19 @@ import graphic.hud.FontBuilder;
 import graphic.hud.LabelStyleBuilder;
 import graphic.hud.ScreenImage;
 import graphic.hud.ScreenText;
-import tools.Constants;
 import tools.Point;
 
+/**
+ * Klasse welche eine graphische Lebensanzeige für den Helden realisiert
+ *
+ * @param <T>
+ */
 public class Lebensanzeige<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private int hp = 10;
     private ScreenText hpText;
 
+    /** Konstruktor für die Klasse Lebensanzeige */
     public Lebensanzeige() {
         this(new SpriteBatch());
     }
@@ -32,27 +37,21 @@ public class Lebensanzeige<T extends Actor> extends ScreenController<T> implemen
     public Lebensanzeige(SpriteBatch batch) {
         super(batch);
 
-        ScreenImage screenImage =
-            new ScreenImage("hud/Lebensanzeige.png",new Point(0,0));
-        screenImage.setPosition(
-            screenImage.getWidth()/2,
-            0,
-            Align.center | Align.bottom);
+        ScreenImage screenImage = new ScreenImage("hud/Lebensanzeige.png", new Point(0, 0));
+        screenImage.setPosition(screenImage.getWidth() / 2, 0, Align.center | Align.bottom);
         add((T) screenImage);
 
         hpText =
-            new ScreenText(
-                hp+"",
-                new Point(0, 0),
-                3,
-                new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
-                    .setFontcolor(Color.RED)
-                    .build());
+                new ScreenText(
+                        hp + "",
+                        new Point(0, 0),
+                        3,
+                        new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
+                                .setFontcolor(Color.RED)
+                                .build());
         hpText.setFontScale(3);
         hpText.setPosition(
-            screenImage.getWidth()/2,
-            hpText.getHeight(),
-            Align.center | Align.bottom);
+                screenImage.getWidth() / 2, hpText.getHeight(), Align.center | Align.bottom);
         add((T) hpText);
 
         showMenu();
@@ -62,7 +61,7 @@ public class Lebensanzeige<T extends Actor> extends ScreenController<T> implemen
     public void update(Entity e) {
         HealthComponent hc = (HealthComponent) e.getComponent(HealthComponent.class).orElseThrow();
         hp = hc.getCurrentHealthpoints();
-        hpText.setText(hp > 0 ? hp+"" : "0");
+        hpText.setText(hp > 0 ? hp + "" : "0");
     }
 
     @Override

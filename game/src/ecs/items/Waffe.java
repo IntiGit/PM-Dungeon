@@ -6,15 +6,14 @@ import ecs.entities.Entity;
 import ecs.entities.Hero;
 import graphic.Animation;
 
-/**
- * Klasse die den Item Typ Waffe darstellt
- */
+/** Klasse die den Item Typ Waffe darstellt */
 public class Waffe extends ItemData implements IToggleEquipp {
 
     private final int damage;
 
     /**
      * Konstruktor fuer die Klasse Waffe
+     *
      * @param itemType Item Typ des Items (Basic, Passive, Active)
      * @param inventoryTexture Textur des Items im Inventar
      * @param worldTexture Textur des Items im Spiel
@@ -36,6 +35,7 @@ public class Waffe extends ItemData implements IToggleEquipp {
 
     /**
      * Getter fuer den Schaden der Waffe
+     *
      * @return Schaden der Waffe
      */
     public int getDamage() {
@@ -44,6 +44,7 @@ public class Waffe extends ItemData implements IToggleEquipp {
 
     /**
      * Implementiert das ausruesten einer Waffe
+     *
      * @param e Entity die das Item ausruestet
      */
     @Override
