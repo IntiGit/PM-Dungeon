@@ -19,9 +19,7 @@ public class Chest extends Entity {
     public static final List<String> DEFAULT_OPENING_ANIMATION_FRAMES =
             List.of(
                     "objects/treasurechest/chest_full_open_anim_f0.png",
-                    "objects/treasurechest/chest_full_open_anim_f1.png",
-                    "objects/treasurechest/chest_full_open_anim_f2.png",
-                    "objects/treasurechest/chest_empty_open_anim_f2.png");
+                    "objects/treasurechest/chest_full_open_anim_f1.png");
 
     /**
      * small Generator which uses the Item#ITEM_REGISTER

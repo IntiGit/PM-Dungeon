@@ -33,12 +33,11 @@ public class Lebensanzeige<T extends Actor> extends ScreenController<T> implemen
         super(batch);
 
         ScreenImage screenImage =
-            new ScreenImage("animation/missingTexture.png",new Point(0,0));
+            new ScreenImage("hud/Lebensanzeige.png",new Point(0,0));
         screenImage.setPosition(
-            screenImage.getWidth(),
-            screenImage.getHeight(),
+            screenImage.getWidth()/2,
+            0,
             Align.center | Align.bottom);
-        screenImage.scaleBy(2f);
         add((T) screenImage);
 
         hpText =
@@ -51,7 +50,7 @@ public class Lebensanzeige<T extends Actor> extends ScreenController<T> implemen
                     .build());
         hpText.setFontScale(3);
         hpText.setPosition(
-            hpText.getWidth(),
+            screenImage.getWidth()/2,
             hpText.getHeight(),
             Align.center | Align.bottom);
         add((T) hpText);

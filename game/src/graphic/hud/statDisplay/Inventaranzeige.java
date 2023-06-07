@@ -54,6 +54,16 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
         images.clear();
         int itemCount = 1;
         for(ItemData item : inventory.getItems()) {
+            ScreenImage bg =
+                new ScreenImage("hud/InventoryBackground.png",new Point(0,0));
+            bg.setSize(32,32);
+            bg.setPosition(
+                bg.getWidth() * 2 * (itemCount - 1),
+                bg.getHeight()
+            );
+            images.add((T) bg);
+            add((T) bg);
+
             ScreenImage img =
                 new ScreenImage(item.getInventoryTexture().getAnimationFrames().get(0),new Point(0,0));
             img.setSize(32,32);

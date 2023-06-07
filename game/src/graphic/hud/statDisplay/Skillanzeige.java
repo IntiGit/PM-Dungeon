@@ -68,10 +68,35 @@ public class Skillanzeige<T extends Actor> extends ScreenController<T> implement
             text.add((T) screenText);
             add((T) screenText);
 
-            ScreenImage screenImage =
-                new ScreenImage("animation/missingTexture.png",new Point(0,0));
+            ScreenImage screenImage = new ScreenImage("animation/missingTexture.png", new Point(0,0));
+            switch (s.getSkillID()) {
+                case 1 -> {
+                    screenImage = new ScreenImage("hud/skill_icons/FeuerballSkill.png", new Point(0, 0));
+                    screenImage.setScale(1,1);
+                }
+                case 2 -> {
+                    screenImage = new ScreenImage("hud/skill_icons/HealingSkill.png", new Point(0, 0));
+                    screenImage.setScale(1,1);
+                }
+                case 3 -> {
+                    screenImage = new ScreenImage("hud/skill_icons/SpeedSkill.png", new Point(0, 0));
+                    screenImage.setScale(1,1);
+                }
+                case 4 -> {
+                    screenImage = new ScreenImage("hud/skill_icons/NahkampfSkill.png", new Point(0, 0));
+                    screenImage.setScale(0.9f,0.9f);
+                }
+                case 5 -> {
+                    screenImage = new ScreenImage("hud/skill_icons/BumerangSkill.png", new Point(0, 0));
+                    screenImage.setScale(0.5f,0.5f);
+                }
+                case 6 -> {
+                    screenImage = new ScreenImage("hud/skill_icons/GummiebaerchenSkill.png", new Point(0, 0));
+                    screenImage.setScale(0.7f,0.7f);
+                }
+            }
             screenImage.setPosition(
-                (Constants.WINDOW_WIDTH)/1.1f + screenImage.getWidth(),
+                (Constants.WINDOW_WIDTH)/1.1f + screenImage.getWidth()/2,
                 screenText.getHeight() * skillCount * screenText.getFontScaleY() * 1.5f - screenText.getHeight() * 1.5f,
                 Align.center | Align.bottom);
             images.add((T) screenImage);
