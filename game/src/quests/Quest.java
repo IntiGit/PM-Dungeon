@@ -15,7 +15,7 @@ public abstract class Quest {
         return description;
     }
 
-    protected boolean isCompleted(){
+    public boolean isCompleted(){
         return Math.round(progress) == 100;
     }
 }

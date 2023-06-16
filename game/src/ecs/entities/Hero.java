@@ -198,6 +198,12 @@ public class Hero extends Entity implements ILevelUp {
         return myQuests;
     }
 
+    public void receiveQuestRward(Quest q) {
+        XPComponent xpc = (XPComponent) getComponent(XPComponent.class).orElseThrow();
+        xpc.addXP(q.getRewardXP());
+        removeQuest(q);
+    }
+
     /** Banachrichtigt alle Observer des Helden */
     public void notifyObservers() {
         for (IHudElement o : observer) {

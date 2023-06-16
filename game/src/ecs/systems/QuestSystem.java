@@ -9,7 +9,11 @@ public class QuestSystem extends ECS_System{
     @Override
     public void update() {
         Hero h = (Hero) Game.getHero().get();
-        h.getMyQuests()
-            .forEach(Quest::advanceProgress);
+        for(Quest q : h.getMyQuests()) {
+            q.advanceProgress();
+            if(q.isCompleted()) {
+                h.receiveQuestRward(q);
+            }
+        }
     }
 }
