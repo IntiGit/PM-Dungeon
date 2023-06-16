@@ -29,8 +29,8 @@ public class ChestMonster extends Monster implements IInteraction {
         loot = pLoot;
         speed = 0.15f;
 
-        pathToIdleLeft = "chestMonster/idleLeft";
-        pathToIdleRight = "chestMonster/idleRight";
+        pathToIdleLeft = "objects/treasurechest/chest_full_open_anim_f0.png";
+        pathToIdleRight = "objects/treasurechest/chest_full_open_anim_f0.png";
         pathToRunLeft = "chestMonster/runLeft";
         pathToRunRight = "chestMonster/runRight";
 
