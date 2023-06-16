@@ -1,7 +1,10 @@
 package quests;
 
+import starter.Game;
+
 public class CollectItemsQuest extends Quest {
 
+    private int curAmount;
     private int amount;
 
     public CollectItemsQuest(int amount) {
@@ -13,10 +16,12 @@ public class CollectItemsQuest extends Quest {
 
     @Override
     public void advanceProgress() {
-        progress = 100f / this.amount;
+        progress = 100f * curAmount / this.amount;
+        Game.questanzeige.showActiveQuests();
     }
 
     public void collectItem() {
-        this.amount++;
+        this.curAmount++;
+        Game.questanzeige.showActiveQuests();
     }
 }

@@ -2,6 +2,7 @@ package quests;
 
 import ecs.entities.Entity;
 import ecs.entities.monsters.Monster;
+import starter.Game;
 
 public class KillMonsterQuest extends Quest {
 
@@ -20,6 +21,7 @@ public class KillMonsterQuest extends Quest {
     @Override
     public void advanceProgress() {
         progress = 100f * killCount / this.amount;
+        Game.questanzeige.showActiveQuests();
     }
 
     public void addToKillcount(Entity e) {

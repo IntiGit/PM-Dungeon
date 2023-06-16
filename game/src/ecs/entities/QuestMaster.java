@@ -2,13 +2,14 @@ package ecs.entities;
 
 import dslToGame.AnimationBuilder;
 import ecs.components.*;
+import ecs.systems.ECS_System;
 import graphic.Animation;
 import quests.Quest;
 import starter.Game;
 
 public class QuestMaster extends Entity implements IInteraction {
 
-    private final String pathToTexture = "";
+    private final String pathToTexture = "animation/missingTexture.png";
     private Quest quest;
 
     public QuestMaster(Quest questToGive) {
@@ -39,14 +40,14 @@ public class QuestMaster extends Entity implements IInteraction {
 
     @Override
     public void onInteraction(Entity entity) {
-        if(entity instanceof Hero h) {
-            int s = h.getMyQuests().size();
+        System.out.println(entity.getClass().getSimpleName());
 
-            Game.questanzeige.QuestAcceptDeny(quest);
-            Game.questScreenOpen = true;
-            if(s != h.getMyQuests().size()) {
-                removeComponent(InteractionComponent.class);
-            }
-        }
+        Hero h = (Hero) Game.getHero().get();
+        int s = h.getMyQuests().size();
+
+        Game.questanzeige.QuestAcceptDeny(quest);
+        Game.questScreenOpen = true;
+        removeComponent(InteractionComponent.class);
+        Game.systems.forEach(ECS_System::toggleRun);
     }
 }

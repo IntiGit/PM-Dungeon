@@ -15,10 +15,7 @@ import controller.SystemController;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.xp.XPComponent;
-import ecs.entities.Entity;
-import ecs.entities.Geist;
-import ecs.entities.Grabstein;
-import ecs.entities.Hero;
+import ecs.entities.*;
 import ecs.entities.monsters.*;
 import ecs.entities.traps.Loch;
 import ecs.entities.traps.Schleim;
@@ -33,6 +30,8 @@ import graphic.hud.statDisplay.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
 import level.IOnLevelLoader;
 import level.LevelAPI;
 import level.elements.ILevel;
@@ -41,9 +40,7 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
-import quests.KillAllMonstersQuest;
-import quests.KillMonsterQuest;
-import quests.Quest;
+import quests.*;
 import tools.Constants;
 import tools.Point;
 
@@ -229,8 +226,16 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             }
             levelAPI.loadLevel(LEVELSIZE);
         }
-        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.X)) questScreenOpen = false;
-        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.U)) questanzeige.acceptQuest();
+        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+            questScreenOpen = false;
+            questanzeige.clearAcceptDenyText();
+            systems.forEach(ECS_System::toggleRun);
+        }
+        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            questScreenOpen = false;
+            questanzeige.acceptQuest();
+            systems.forEach(ECS_System::toggleRun);
+        }
 
 
     }
@@ -252,6 +257,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         if (levelCount % 5 == 0) {
             hasGhost = true;
+            generateQuestMaster();
         } else {
             hasGhost = false;
         }
@@ -293,7 +299,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             List<Quest> heroQuests = h.getMyQuests();
             for (Quest q : heroQuests) {
                 if (q instanceof KillAllMonstersQuest kamQ) {
-                    kamQ.setMonsterSet(entities);
+                    kamQ.setAmountToKill();
                 }
             }
             levelJustLoaded = false;
@@ -464,6 +470,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         new XPSystem();
         new SkillSystem();
         new ProjectileSystem();
+        new QuestSystem();
     }
 
     private void generateMonsters() {
@@ -525,5 +532,38 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             entities.add(WorldItemBuilder.buildWorldItem(item));
             amount--;
         }
+    }
+
+    private void generateQuestMaster() {
+        Quest q = null;
+
+        Hero h = (Hero) getHero().get();
+        Set<String> activeQuests =
+            h.getMyQuests().stream()
+                .map((s) -> s.getClass().getSimpleName())
+                .collect(Collectors.toSet());
+
+
+        Random rng = new Random();
+        if(activeQuests.size() == 4) {
+            return;
+        }
+        while (q == null || activeQuests.contains(q.getClass().getSimpleName())) {
+            switch (rng.nextInt(1, 5)) {
+                case 1 -> {
+                    q = new CollectItemsQuest(3);
+                }
+                case 2 -> {
+                    q = new FillInventoryQuest();
+                }
+                case 3 -> {
+                    q = new KillMonsterQuest(new Daemon(), 3);
+                }
+                case 4 -> {
+                    q = new KillAllMonstersQuest();
+                }
+            }
+        }
+        entities.add(new QuestMaster(q));
     }
 }

@@ -2,6 +2,7 @@ package quests;
 
 import ecs.entities.Entity;
 import ecs.entities.monsters.Monster;
+import starter.Game;
 
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,7 +10,7 @@ import java.util.stream.Collectors;
 public class KillAllMonstersQuest extends Quest {
 
     private Set<Monster> monsters;
-    private int amount;
+    private int amountToKill = 0;
 
     public KillAllMonstersQuest() {
         description = "Besiege alle Monster eines Levels";
@@ -19,7 +20,11 @@ public class KillAllMonstersQuest extends Quest {
 
     @Override
     public void advanceProgress() {
-        progress = 100 * (float)(amount - monsters.size()) / amount;
+        setMonsterSet(Game.getEntities());
+        if(monsters != null) {
+            progress = 100 * (float) (amountToKill - monsters.size()) / amountToKill;
+            Game.questanzeige.showActiveQuests();
+        }
     }
 
     public void setMonsterSet(Set<Entity> entities) {
@@ -28,6 +33,13 @@ public class KillAllMonstersQuest extends Quest {
                 .filter((m) -> m instanceof Monster)
                 .map((m) -> (Monster) m)
                 .collect(Collectors.toSet());
-        amount = monsters.size();
+    }
+
+    public void setAmountToKill() {
+        amountToKill = Game.getEntities().stream()
+            .filter((m) -> m instanceof Monster)
+            .map((m) -> (Monster) m)
+            .collect(Collectors.toSet())
+            .size();
     }
 }

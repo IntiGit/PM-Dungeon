@@ -7,8 +7,11 @@ import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
 import ecs.items.Schuhe;
 import ecs.items.Waffe;
+import ecs.systems.QuestSystem;
 import graphic.Animation;
 import graphic.hud.statDisplay.IHudElement;
+import quests.FillInventoryQuest;
+import quests.KillAllMonstersQuest;
 import quests.Quest;
 import starter.Game;
 
@@ -189,6 +192,14 @@ public class Hero extends Entity implements ILevelUp {
 
     public void addQuest(Quest q) {
         myQuests.add(q);
+        if(q instanceof KillAllMonstersQuest kamQ) {
+            kamQ.setAmountToKill();
+        }
+        if(q instanceof FillInventoryQuest fiQ) {
+            InventoryComponent ic =
+                (InventoryComponent) getComponent(InventoryComponent.class).orElseThrow();
+            fiQ.setInventoryComponent(ic);
+        }
         Game.questanzeige.update(this);
     }
 
@@ -201,10 +212,9 @@ public class Hero extends Entity implements ILevelUp {
         return myQuests;
     }
 
-    public void receiveQuestRward(Quest q) {
+    public void receiveQuestReward(Quest q) {
         XPComponent xpc = (XPComponent) getComponent(XPComponent.class).orElseThrow();
         xpc.addXP(q.getRewardXP());
-        removeQuest(q);
     }
 
     /** Banachrichtigt alle Observer des Helden */

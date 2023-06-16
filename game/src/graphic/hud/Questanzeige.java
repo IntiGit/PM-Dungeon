@@ -14,12 +14,18 @@ import tools.Constants;
 import tools.Point;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class Questanzeige<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private List<Quest> questList = new ArrayList<>();
+    public static Set<Quest> givenQuests = new HashSet<>();
+
+    private Set<T> questAcceptText = new HashSet<>();
+    private Set<T> screenTexts = new HashSet<>();
     private Quest toCheck;
 
     public Questanzeige() {
@@ -34,7 +40,6 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
      */
     public Questanzeige(SpriteBatch batch) {
         super(batch);
-        this.clear();
         showActiveQuests();
         showMenu();
 
@@ -60,24 +65,26 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
         this.forEach((Actor s) -> s.setVisible(false));
     }
 
-    private void showActiveQuests() {
-        clear();
+    public void showActiveQuests() {
+        removeAll();
         int count = 1;
         for(Quest q : questList) {
             ScreenText questText =
                 new ScreenText(
-                    q.getProgress() + "% " + q.getDescription(),
+                    (int) q.getProgress() + "% " + q.getDescription(),
                     new Point(0, 0),
-                    3,
+                    1,
                     new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
                         .setFontcolor(Color.RED)
                         .build());
-            questText.setFontScale(2);
+            questText.setFontScale(1);
             questText.setPosition(
-                Constants.WINDOW_WIDTH - (questText.getWidth() * 1.5f),
+                Constants.WINDOW_WIDTH/2,
                 Constants.WINDOW_HEIGHT - count * (questText.getHeight() * 1.5f),
                 Align.center | Align.bottom);
             add((T) questText);
+            count++;
+            screenTexts.add((T) questText);
         }
     }
 
@@ -89,11 +96,11 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
                 new Point(0, 0),
                 2,
                 new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
-                    .setFontcolor(Color.RED)
+                    .setFontcolor(Color.GOLD)
                     .build());
         questText.setPosition(
-            Constants.WINDOW_WIDTH / 2 - questText.getWidth(),
-            Constants.WINDOW_HEIGHT / 2 - questText.getHeight(),
+            Constants.WINDOW_WIDTH / 2 ,
+            Constants.WINDOW_HEIGHT / 1.7f + questText.getHeight(),
             Align.center | Align.bottom);
         add((T) questText);
         ScreenText accept =
@@ -102,7 +109,7 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
                 new Point(0, 0),
                 2,
                 new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
-                    .setFontcolor(Color.RED)
+                    .setFontcolor(Color.GREEN)
                     .build());
         accept.setPosition(
             Constants.WINDOW_WIDTH / 2 - accept.getWidth() * 2,
@@ -122,10 +129,30 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
             Constants.WINDOW_HEIGHT / 2 - questText.getHeight() * 2,
             Align.center | Align.bottom);
         add((T) deny);
+
+        questAcceptText.add((T) questText);
+        questAcceptText.add((T) accept);
+        questAcceptText.add((T) deny);
     }
 
     public void acceptQuest() {
         Hero h = (Hero) Game.getHero().get();
         h.addQuest(toCheck);
+        givenQuests.add(toCheck);
+        clearAcceptDenyText();
+    }
+
+    public void clearAcceptDenyText() {
+        for (T t : questAcceptText) {
+            remove(t);
+        }
+        questAcceptText.clear();
+    }
+
+    private void removeAll() {
+        for (T t : screenTexts) {
+            remove(t);
+        }
+        screenTexts.clear();
     }
 }
