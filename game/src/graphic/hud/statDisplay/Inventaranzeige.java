@@ -57,12 +57,8 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
         }
         images.clear();
         int itemCount = 1;
+        createBackground();
         for (ItemData item : inventory.getItems()) {
-            ScreenImage bg = new ScreenImage("hud/InventoryBackground.png", new Point(0, 0));
-            bg.setSize(32, 32);
-            bg.setPosition(bg.getWidth() * 2 * (itemCount - 1), bg.getHeight());
-            images.add((T) bg);
-            add((T) bg);
 
             ScreenImage img =
                     new ScreenImage(
@@ -83,6 +79,16 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
         }
         showItemDescription();
         Game.bagOpen = false;
+    }
+
+    private void createBackground() {
+        for(int i = 1; i < 11; i++ ) {
+            ScreenImage bg = new ScreenImage("hud/InventoryBackground.png", new Point(0, 0));
+            bg.setSize(32, 32);
+            bg.setPosition(bg.getWidth() * 2 * (i - 1), bg.getHeight());
+            images.add((T) bg);
+            add((T) bg);
+        }
     }
 
     /** Wählt das nächste Item im Inventar aus Schrittrichtung rechts -> */
