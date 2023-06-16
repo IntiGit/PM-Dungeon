@@ -28,6 +28,7 @@ import graphic.DungeonCamera;
 import graphic.Painter;
 import graphic.hud.GameOverMenu;
 import graphic.hud.PauseMenu;
+import graphic.hud.Questanzeige;
 import graphic.hud.statDisplay.*;
 import java.io.IOException;
 import java.util.*;
@@ -76,6 +77,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     /** Variable um anzuzeigen ob gerade eine Tasche offen ist */
     public static boolean bagOpen = false;
 
+    public static boolean questScreenOpen = false;
+
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
     /** All entities to be removed from the dungeon in the next frame */
@@ -94,6 +97,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private static Levelanzeige<Actor> levelanzeige;
     private static Skillanzeige<Actor> skillanzeige;
     private static Inventaranzeige<Actor> inventaranzeige;
+    public static Questanzeige<Actor> questanzeige;
 
     public static ILevel currentLevel;
     private static Entity hero;
@@ -159,6 +163,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         levelanzeige = new Levelanzeige<>();
         skillanzeige = new Skillanzeige<>();
         inventaranzeige = new Inventaranzeige<>();
+        questanzeige = new Questanzeige<>();
 
         controller.add(pauseMenu);
         controller.add(gameover);
@@ -167,6 +172,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         controller.add(levelanzeige);
         controller.add(skillanzeige);
         controller.add(inventaranzeige);
+        controller.add(questanzeige);
 
         if (hero instanceof Hero h) {
             h.register(lebensanzeige);
@@ -174,6 +180,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             h.register(skillanzeige);
             h.register(inventaranzeige);
             h.notifyObservers();
+            questanzeige.update(h);
         }
     }
 
@@ -222,6 +229,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             }
             levelAPI.loadLevel(LEVELSIZE);
         }
+        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.X)) questScreenOpen = false;
+        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.U)) questanzeige.acceptQuest();
+
+
     }
 
     @Override

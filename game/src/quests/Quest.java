@@ -1,11 +1,16 @@
 package quests;
 
 public abstract class Quest {
+    protected String title;
     protected String description;
     protected int rewardXP;
     protected float progress;
 
     public abstract void advanceProgress();
+
+    public float getProgress() {
+        return progress;
+    }
 
     public int getRewardXP() {
         return rewardXP;

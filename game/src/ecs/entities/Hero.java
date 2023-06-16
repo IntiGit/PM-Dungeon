@@ -10,6 +10,7 @@ import ecs.items.Waffe;
 import graphic.Animation;
 import graphic.hud.statDisplay.IHudElement;
 import quests.Quest;
+import starter.Game;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -188,10 +189,12 @@ public class Hero extends Entity implements ILevelUp {
 
     public void addQuest(Quest q) {
         myQuests.add(q);
+        Game.questanzeige.update(this);
     }
 
     public void removeQuest(Quest q) {
         myQuests.remove(q);
+        Game.questanzeige.update(this);
     }
 
     public List<Quest> getMyQuests() {
