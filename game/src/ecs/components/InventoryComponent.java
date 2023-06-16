@@ -1,11 +1,16 @@
 package ecs.components;
 
 import ecs.entities.Entity;
+import ecs.entities.Hero;
 import ecs.items.ItemData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import logging.CustomLogLevel;
+import quests.CollectItemsQuest;
+import quests.FillInventoryQuest;
+import quests.Quest;
+import starter.Game;
 
 /** Allows an Entity to carry Items */
 public class InventoryComponent extends Component {
@@ -42,7 +47,19 @@ public class InventoryComponent extends Component {
                         + "' was added to the inventory of entity '"
                         + entity.getClass().getSimpleName()
                         + "'.");
-        return inventory.add(itemData);
+        boolean wasAdded = inventory.add(itemData);
+        if(wasAdded) {
+            Hero h = (Hero) Game.getHero().get();
+            for(Quest q : h.getMyQuests()) {
+                if(q instanceof FillInventoryQuest fiQ) {
+                    fiQ.setInventoryComponent(this);
+                }
+                if(q instanceof CollectItemsQuest ciQ) {
+                    ciQ.collectItem();
+                }
+            }
+        }
+        return wasAdded;
     }
 
     /**

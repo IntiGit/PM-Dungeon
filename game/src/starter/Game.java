@@ -19,10 +19,7 @@ import ecs.entities.Entity;
 import ecs.entities.Geist;
 import ecs.entities.Grabstein;
 import ecs.entities.Hero;
-import ecs.entities.monsters.ChestMonster;
-import ecs.entities.monsters.Daemon;
-import ecs.entities.monsters.Necromancer;
-import ecs.entities.monsters.Skelett;
+import ecs.entities.monsters.*;
 import ecs.entities.traps.Loch;
 import ecs.entities.traps.Schleim;
 import ecs.items.*;
@@ -43,6 +40,9 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
+import quests.KillAllMonstersQuest;
+import quests.KillMonsterQuest;
+import quests.Quest;
 import tools.Constants;
 import tools.Point;
 
@@ -104,6 +104,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     public static boolean hasGhost = false;
     private int levelCount = 0;
+    private boolean levelJustLoaded = false;
 
     public static ItemFactory itemFactory = new ItemFactory();
 
@@ -225,6 +226,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     @Override
     public void onLevelLoad() {
+        levelJustLoaded = true;
         levelCount++;
         currentLevel = levelAPI.getCurrentLevel();
         entities.clear();
@@ -251,6 +253,19 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     }
 
     private void manageEntitiesSets() {
+        for(Entity e : entitiesToRemove) {
+            if(e instanceof Monster m) {
+                Hero h = (Hero) getHero().get();
+                List<Quest> heroQuests = h.getMyQuests();
+                for (Quest q : heroQuests) {
+                    if (q instanceof KillMonsterQuest kmQ) {
+                        kmQ.addToKillcount(m);
+                    }
+                }
+            }
+        }
+
+
         entities.removeAll(entitiesToRemove);
         entities.addAll(entitiesToAdd);
         for (Entity entity : entitiesToRemove) {
@@ -261,6 +276,17 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         }
         entitiesToRemove.clear();
         entitiesToAdd.clear();
+
+        if(levelJustLoaded) {
+            Hero h = (Hero) getHero().get();
+            List<Quest> heroQuests = h.getMyQuests();
+            for (Quest q : heroQuests) {
+                if (q instanceof KillAllMonstersQuest kamQ) {
+                    kamQ.setMonsterSet(entities);
+                }
+            }
+            levelJustLoaded = false;
+        }
     }
 
     private void setCameraFocus() {
