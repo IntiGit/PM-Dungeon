@@ -9,9 +9,9 @@ import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
 import graphic.hud.statDisplay.IHudElement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import quests.Quest;
+
+import java.util.*;
 import java.util.logging.Logger;
 
 /**
@@ -37,6 +37,8 @@ public class Hero extends Entity implements ILevelUp {
     private Schuhe shoes;
 
     private int plusDmg = 1;
+
+    private List<Quest> myQuests = new ArrayList<>();
 
     private Set<IHudElement> observer = new HashSet<>();
 
@@ -182,6 +184,18 @@ public class Hero extends Entity implements ILevelUp {
      */
     public void register(IHudElement hudElement) {
         observer.add(hudElement);
+    }
+
+    public void addQuest(Quest q) {
+        myQuests.add(q);
+    }
+
+    public void removeQuest(Quest q) {
+        myQuests.remove(q);
+    }
+
+    public List<Quest> getMyQuests() {
+        return myQuests;
     }
 
     /** Banachrichtigt alle Observer des Helden */
