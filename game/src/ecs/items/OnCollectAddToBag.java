@@ -5,15 +5,14 @@ import ecs.components.ItemComponent;
 import ecs.entities.Entity;
 import starter.Game;
 
-/**
- * OnCollect Verhalten fuer Items die einer eventuellen Tasche hinzugefuegt werden sollen
- */
+/** OnCollect Verhalten fuer Items die einer eventuellen Tasche hinzugefuegt werden sollen */
 public class OnCollectAddToBag implements IOnCollect {
 
     private Class<?> typetocheck;
 
     /**
      * Implementiert das einfuegen des Items in das Inventar bzw. die passende Tasche
+     *
      * @param worldItem
      * @param whoCollected
      */

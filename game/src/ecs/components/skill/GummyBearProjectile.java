@@ -22,13 +22,12 @@ public class GummyBearProjectile extends Entity implements ICollide {
     private Point start;
     private HashSet<Monster> visitedMonsters;
 
-    /**
-     * Leerer Konstruktor
-     */
+    /** Leerer Konstruktor */
     public GummyBearProjectile() {}
 
     /**
      * Konstruktor fuer die Klasse GummyBearProjectile
+     *
      * @param dmg Schaden des Projektils
      * @param pathToTexture Pfad zur Textur des Projektils
      * @param range Reichweite des Projektils
@@ -53,6 +52,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
 
     /**
      * Erstellt eine neue PositionComponent
+     *
      * @param p Punkt an dem das Projektil sein soll
      */
     public void setupPositionComponent(Point p) {
@@ -61,6 +61,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
 
     /**
      * Erzeugt eine neue Velocity- und ProjectileComponent
+     *
      * @param epc PositionComponent
      * @param aimedOn Vorlaeufiger Zielpunkt des Projektils
      */
@@ -79,17 +80,13 @@ public class GummyBearProjectile extends Entity implements ICollide {
         setupProjectileComponent(epc, targetPoint);
     }
 
-    /**
-     * Erstellt eine neue AnimationComponent
-     */
+    /** Erstellt eine neue AnimationComponent */
     public void setupAnimationComponent() {
         Animation move = AnimationBuilder.buildAnimation(pathToTexture);
         new AnimationComponent(this, move);
     }
 
-    /**
-     * Erstellt eine neue HitboxComponent
-     */
+    /** Erstellt eine neue HitboxComponent */
     public void setupHitboxComponent() {
         new HitboxComponent(
                 this, new Point(0.1f, 0.1f), new Point(1, 1), this, (you, other, direction) -> {});
@@ -97,6 +94,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
 
     /**
      * Erstellt eine neue ProjectileComponent
+     *
      * @param epc PositionComponent
      * @param targetPoint Zielpunkt
      */
@@ -155,6 +153,7 @@ public class GummyBearProjectile extends Entity implements ICollide {
 
     /**
      * Implementiert was bei Kollision passieren soll
+     *
      * @param a is the current Entity
      * @param b is the Entity with whom the Collision happened
      * @param from the direction from a to b

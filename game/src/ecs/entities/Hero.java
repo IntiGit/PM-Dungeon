@@ -1,25 +1,17 @@
 package ecs.entities;
 
 import dslToGame.AnimationBuilder;
-import ecs.components.AnimationComponent;
-import ecs.components.PlayableComponent;
-import ecs.components.PositionComponent;
-import ecs.components.VelocityComponent;
-import ecs.components.HealthComponent;
-import ecs.components.HitboxComponent;
-import ecs.components.OnHeroDeath;
-import ecs.components.skill.FireballSkill;
-import ecs.components.skill.Skill;
-import ecs.components.skill.SkillComponent;
-import ecs.components.skill.SkillTools;
-import ecs.components.skill.HealingSkill;
-import ecs.components.skill.SpeedSkill;
+import ecs.components.*;
+import ecs.components.skill.*;
 import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
 import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
+import graphic.hud.statDisplay.IHudElement;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -45,6 +37,8 @@ public class Hero extends Entity implements ILevelUp {
     private Schuhe shoes;
 
     private int plusDmg = 1;
+
+    private Set<IHudElement> observer = new HashSet<>();
 
     /** Entity with Components */
     public Hero() {
@@ -72,10 +66,12 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Fuegt dem Skillset des Helden den Nahkampf Skill hinzu
+     *
      * @param sc Skillcomponent
      */
     public void setupCloseCombatSkill(SkillComponent sc) {
         sc.addSkill(new Skill(new CloseCombatSkill(1, weapon, "", 1f, 0.05f), 1, 4));
+        notifyObservers();
     }
 
     private void setupRangeCombatSkills(SkillComponent sc) {
@@ -83,6 +79,7 @@ public class Hero extends Entity implements ILevelUp {
                 (PositionComponent) this.getComponent(PositionComponent.class).orElseThrow();
         sc.addSkill(new Skill(new RangeCombatSkill(new BumerangProjectile()), 5f, 5));
         sc.addSkill(new Skill(new RangeCombatSkill(new GummyBearProjectile()), 5f, 6));
+        notifyObservers();
     }
 
     private void setupVelocityComponent() {
@@ -126,6 +123,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Rustet den Helden mit einer Waffe aus
+     *
      * @param pWeapon auszurüstende Waffe
      */
     public void equippWeapon(Waffe pWeapon) {
@@ -134,6 +132,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Rustet den Helden mit Schuhen aus
+     *
      * @param pShoes auszurüstende Schuhe
      */
     public void equippShoes(Schuhe pShoes) {
@@ -142,6 +141,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * getter fuer die aktuelle Waffe des Helden
+     *
      * @return aktuelle Waffe des Helden
      */
     public Waffe getWeapon() {
@@ -150,6 +150,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * getter fuer die aktuellen Schuhe des Helden
+     *
      * @return aktuelle Schuhe des Helden
      */
     public Schuhe getShoes() {
@@ -158,6 +159,7 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Setter fuer den Extraschaden
+     *
      * @param pplusDmg neuer Extraschaden
      */
     public void setplusDmg(int pplusDmg) {
@@ -166,10 +168,27 @@ public class Hero extends Entity implements ILevelUp {
 
     /**
      * Getter fuer den Extraschaden
+     *
      * @return Extraschaden des Helden
      */
     public int getplusDmg() {
         return plusDmg;
+    }
+
+    /**
+     * Registriert einen Observer beim Hero
+     *
+     * @param hudElement Hud Element welches den Helden observiert
+     */
+    public void register(IHudElement hudElement) {
+        observer.add(hudElement);
+    }
+
+    /** Banachrichtigt alle Observer des Helden */
+    public void notifyObservers() {
+        for (IHudElement o : observer) {
+            o.update(this);
+        }
     }
 
     @Override
@@ -178,6 +197,7 @@ public class Hero extends Entity implements ILevelUp {
      * 10 werden neue Skills freigeschaltet
      */
     public void onLevelUp(long nexLevel) {
+        notifyObservers();
         heroLogger.info("Levelaustieg zu Level " + nexLevel);
         HealthComponent myHC =
                 (HealthComponent) this.getComponent(HealthComponent.class).orElseThrow();

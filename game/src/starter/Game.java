@@ -12,7 +12,6 @@ import configuration.Configuration;
 import configuration.KeyboardConfig;
 import controller.AbstractController;
 import controller.SystemController;
-import ecs.components.InventoryComponent;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.xp.XPComponent;
@@ -20,6 +19,7 @@ import ecs.entities.Entity;
 import ecs.entities.Geist;
 import ecs.entities.Grabstein;
 import ecs.entities.Hero;
+import ecs.entities.monsters.ChestMonster;
 import ecs.entities.monsters.Daemon;
 import ecs.entities.monsters.Necromancer;
 import ecs.entities.monsters.Skelett;
@@ -31,6 +31,7 @@ import graphic.DungeonCamera;
 import graphic.Painter;
 import graphic.hud.GameOverMenu;
 import graphic.hud.PauseMenu;
+import graphic.hud.statDisplay.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -70,7 +71,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private boolean doSetup = true;
     private static boolean paused = false;
     private static boolean playerDied = false;
-    private boolean inventoryOpen = false;
+    /** Variable um anzuzeigen ob gerade das Inventar offen ist */
+    public static boolean inventoryOpen = false;
+    /** Variable um anzuzeigen ob gerade eine Tasche offen ist */
+    public static boolean bagOpen = false;
 
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
@@ -82,9 +86,16 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     /** List of all Systems in the ECS */
     public static SystemController systems;
 
-    public static ILevel currentLevel;
+    // HUD Elemente
     private static PauseMenu<Actor> pauseMenu;
     private static GameOverMenu<Actor> gameover;
+    private static Lebensanzeige<Actor> lebensanzeige;
+    private static MonsterLebensanzeige<Actor> monsterLebensanzeige;
+    private static Levelanzeige<Actor> levelanzeige;
+    private static Skillanzeige<Actor> skillanzeige;
+    private static Inventaranzeige<Actor> inventaranzeige;
+
+    public static ILevel currentLevel;
     private static Entity hero;
     private Logger gameLogger;
     private Scanner sc = new Scanner(System.in);
@@ -94,7 +105,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     public static boolean hasGhost = false;
     private int levelCount = 0;
 
-    private ItemFactory itemFactory = new ItemFactory();
+    public static ItemFactory itemFactory = new ItemFactory();
 
     public static void main(String[] args) {
         // start the game
@@ -135,23 +146,65 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         gameLogger = Logger.getLogger(this.getClass().getName());
         systems = new SystemController();
         controller.add(systems);
-        pauseMenu = new PauseMenu<>();
-        gameover = new GameOverMenu<>();
-        controller.add(pauseMenu);
-        controller.add(gameover);
         hero = new Hero();
         levelAPI = new LevelAPI(batch, painter, new WallGenerator(new RandomWalkGenerator()), this);
         levelAPI.loadLevel(LEVELSIZE);
         createSystems();
+        // HUD Elemente
+        pauseMenu = new PauseMenu<>();
+        gameover = new GameOverMenu<>();
+        lebensanzeige = new Lebensanzeige<>();
+        monsterLebensanzeige = new MonsterLebensanzeige<>();
+        levelanzeige = new Levelanzeige<>();
+        skillanzeige = new Skillanzeige<>();
+        inventaranzeige = new Inventaranzeige<>();
+
+        controller.add(pauseMenu);
+        controller.add(gameover);
+        controller.add(lebensanzeige);
+        controller.add(monsterLebensanzeige);
+        controller.add(levelanzeige);
+        controller.add(skillanzeige);
+        controller.add(inventaranzeige);
+
+        if (hero instanceof Hero h) {
+            h.register(lebensanzeige);
+            h.register(levelanzeige);
+            h.register(skillanzeige);
+            h.register(inventaranzeige);
+            h.notifyObservers();
+        }
     }
 
     /** Called at the beginning of each frame. Before the controllers call <code>update</code>. */
     protected void frame() {
         setCameraFocus();
         manageEntitiesSets();
+        monsterLebensanzeige.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
+        if (inventoryOpen && bagOpen) {
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
+                inventaranzeige.selectNextItemVertical();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_DOWN.get())) {
+                inventaranzeige.selectPreviousItemVertical();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_USE_ITEM.get())) {
+                inventaranzeige.useItem();
+            }
+        } else if (inventoryOpen) {
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_RIGHT.get())) {
+                inventaranzeige.selectNextItemHorizontal();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_LEFT.get())) {
+                inventaranzeige.selectPreviousItemHorizontal();
+            }
+            if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_USE_ITEM.get())) {
+                inventaranzeige.useItem();
+            }
+        }
         if (playerDied && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
             System.exit(0);
         }
@@ -159,6 +212,13 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             playerDied = false;
             gameover.hideMenu();
             setHero(new Hero());
+            if (hero instanceof Hero h) {
+                h.register(lebensanzeige);
+                h.register(levelanzeige);
+                h.register(skillanzeige);
+                h.register(inventaranzeige);
+                h.notifyObservers();
+            }
             levelAPI.loadLevel(LEVELSIZE);
         }
     }
@@ -257,49 +317,23 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     private void toggleInventory() {
         inventoryOpen = !inventoryOpen;
+        if (systems != null) {
+            systems.forEach(ECS_System::toggleRun);
+        }
         if (inventoryOpen) {
-            InventoryComponent ic =
-                    (InventoryComponent)
-                            getHero().get().getComponent(InventoryComponent.class).orElseThrow();
-            StringBuilder logMessageInventory = new StringBuilder();
-            for (int i = 0; i < ic.filledSlots(); i++) {
-                logMessageInventory
-                        .append(i)
-                        .append(": ")
-                        .append(ic.getItems().get(i).getItemName())
-                        .append("\n");
-            }
-            gameLogger.info("\n" + logMessageInventory);
-            int inputInv = sc.nextInt();
-            if (inputInv >= 0 && inputInv < ic.filledSlots()) {
-                ItemData item = ic.getItems().get(inputInv);
-                if (item instanceof Trank) {
-                    item.triggerUse(getHero().get());
-                } else if (item instanceof Waffe || item instanceof Schuhe) {
-                    ((IToggleEquipp) item).toggleEquipp(getHero().get());
-                } else if (item instanceof Tasche<?> bag) {
-                    StringBuilder logMessageBag = new StringBuilder();
-                    for (int i = 0; i < bag.getItemsInBag().size(); i++) {
-                        logMessageBag
-                                .append("    ")
-                                .append(i)
-                                .append(": ")
-                                .append(bag.getItemsInBag().get(i).getItemName());
-                    }
-                    gameLogger.info(logMessageBag.toString());
-                    if (!bag.isEmpty()) {
-                        int in = sc.nextInt();
-                        if (in >= 0 && in < bag.getItemsInBag().size()) {
-                            ItemData bagItem = bag.getItemsInBag().get(in);
-                            if (bagItem instanceof Trank) {
-                                bagItem.triggerUse(getHero().get());
-                            } else if (bagItem instanceof Waffe || bagItem instanceof Schuhe) {
-                                ((IToggleEquipp) bagItem).toggleEquipp(getHero().get());
-                            }
-                        }
-                    }
-                }
-            }
+            lebensanzeige.hideMenu();
+            monsterLebensanzeige.hideMenu();
+            levelanzeige.hideMenu();
+            skillanzeige.hideMenu();
+
+            inventaranzeige.showMenu();
+        } else {
+            lebensanzeige.showMenu();
+            monsterLebensanzeige.showMenu();
+            levelanzeige.showMenu();
+            skillanzeige.showMenu();
+
+            inventaranzeige.hideMenu();
         }
     }
 
@@ -396,6 +430,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     }
 
     private void generateMonsters() {
+        entities.add(new ChestMonster(itemFactory.getRandomItem()));
         Random randomMons = new Random();
         int monsterAmount =
                 (int) Math.floor(randomMons.nextFloat(3 * difficulty, 5.1f * difficulty));

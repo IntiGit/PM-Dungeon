@@ -8,15 +8,11 @@ import java.util.Random;
 import starter.Game;
 import tools.Point;
 
-/**
- * Klasse fuer die Fernkampangriffe
- */
+/** Klasse fuer die Fernkampangriffe */
 public class RangeCombatSkill implements ISkillFunction {
     private Entity projectile;
 
-    /**
-     * Liste der Texturen fuer Gummiebaerchen
-     */
+    /** Liste der Texturen fuer Gummiebaerchen */
     public static final List<String> gummyBearTextures =
             List.of(
                     "gummyBear/gummyBear_green.png",
@@ -25,6 +21,7 @@ public class RangeCombatSkill implements ISkillFunction {
 
     /**
      * Konstruktor fuer die Klasse RangeCombatSkill
+     *
      * @param projectile gewuenschtes Projektil
      */
     public RangeCombatSkill(Entity projectile) {
@@ -33,6 +30,7 @@ public class RangeCombatSkill implements ISkillFunction {
 
     /**
      * Implementiert die Funktionsweise der Fernkampfangriffe
+     *
      * @param entity which uses the skill
      */
     @Override

@@ -2,11 +2,11 @@ package ecs.components.skill;
 
 import dslToGame.AnimationBuilder;
 import ecs.components.AnimationComponent;
+import ecs.components.HealthComponent;
+import ecs.components.HitboxComponent;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.VelocityComponent;
-import ecs.components.HealthComponent;
-import ecs.components.HitboxComponent;
 import ecs.components.collision.ICollide;
 import ecs.damage.Damage;
 import ecs.damage.DamageType;
@@ -17,9 +17,7 @@ import graphic.Animation;
 import starter.Game;
 import tools.Point;
 
-/**
- * Klasse fuer die Nahkampf Skills
- */
+/** Klasse fuer die Nahkampf Skills */
 public class CloseCombatSkill implements ISkillFunction {
 
     private int dmg;
@@ -30,6 +28,7 @@ public class CloseCombatSkill implements ISkillFunction {
 
     /**
      * Konstruktor fuer die Klasse CloseCombatSkill
+     *
      * @param dmg Schaden des Projektils
      * @param weapon Waffe die der Held traegt
      * @param pathToTexture Pfad zur Textur der Waffe
@@ -45,6 +44,7 @@ public class CloseCombatSkill implements ISkillFunction {
 
     /**
      * Implementiert die Funktionsweise der Skills
+     *
      * @param entity which uses the skill
      */
     @Override

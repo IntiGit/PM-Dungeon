@@ -2,10 +2,10 @@ package ecs.components.skill;
 
 import dslToGame.AnimationBuilder;
 import ecs.components.AnimationComponent;
+import ecs.components.HealthComponent;
+import ecs.components.HitboxComponent;
 import ecs.components.PositionComponent;
 import ecs.components.VelocityComponent;
-import ecs.components.HitboxComponent;
-import ecs.components.HealthComponent;
 import ecs.components.collision.ICollide;
 import ecs.damage.Damage;
 import ecs.damage.DamageType;
@@ -15,9 +15,7 @@ import level.elements.tile.Tile;
 import starter.Game;
 import tools.Point;
 
-/**
- * Klasse die ein Bumerang Projektil fuer den Fernkampf modeliert
- */
+/** Klasse die ein Bumerang Projektil fuer den Fernkampf modeliert */
 public class BumerangProjectile extends Entity implements ICollide {
     private int dmg;
     private String pathToTexture;
@@ -26,13 +24,12 @@ public class BumerangProjectile extends Entity implements ICollide {
     private Point start;
     private boolean returning;
 
-    /**
-     * Leerer Konstruktor
-     */
+    /** Leerer Konstruktor */
     public BumerangProjectile() {}
 
     /**
      * Konstuktor fuer das Bumerang Projektil
+     *
      * @param dmg Schaden des Projektils
      * @param pathToTexture Pfad zur Textur des Projektils
      * @param range Reichweite des Projektils
@@ -57,6 +54,7 @@ public class BumerangProjectile extends Entity implements ICollide {
 
     /**
      * Erzeugt eine neue PositionComponent
+     *
      * @param p Punkt an dem das Projektil sein soll
      */
     public void setupPositionComponent(Point p) {
@@ -65,6 +63,7 @@ public class BumerangProjectile extends Entity implements ICollide {
 
     /**
      * Erzeugt eine neue Velocity- und ProjectileComponent
+     *
      * @param epc PositionComponent
      * @param aimedOn Vorlaeufiger Zielpunkt des Projektils
      */
@@ -83,31 +82,26 @@ public class BumerangProjectile extends Entity implements ICollide {
         setupProjectileComponent(epc, targetPoint);
     }
 
-    /**
-     * Erzeugt eine neue AnimationComponent
-     */
+    /** Erzeugt eine neue AnimationComponent */
     public void setupAnimationComponent() {
         Animation move = AnimationBuilder.buildAnimation(pathToTexture);
         new AnimationComponent(this, move);
     }
 
-    /**
-     * Erzeugt eine neue HitboxComponent
-     */
+    /** Erzeugt eine neue HitboxComponent */
     public void setupHitboxComponent() {
         new HitboxComponent(
                 this, new Point(0.1f, 0.1f), new Point(1, 1), this, (you, other, direction) -> {});
     }
 
-    /**
-     * Erzeugt eine neue ProjectileComponent
-     */
+    /** Erzeugt eine neue ProjectileComponent */
     public void setupProjectileComponent(PositionComponent epc, Point targetPoint) {
         new ProjectileComponent(this, epc.getPosition(), targetPoint);
     }
 
     /**
      * Implementiert Verhalten bei Kollision
+     *
      * @param a is the current Entity
      * @param b is the Entity with whom the Collision happened
      * @param from the direction from a to b

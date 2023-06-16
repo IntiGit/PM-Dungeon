@@ -5,9 +5,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-/**
- * Klasse in der alle Items erstellt und gespeichert werden
- */
+/** Klasse in der alle Items erstellt und gespeichert werden */
 public class ItemFactory {
     private static final List<String> missingTexture = List.of("animation/missingTexture.png");
 
@@ -100,6 +98,7 @@ public class ItemFactory {
 
     /**
      * Gibt ein zufaelliges Item aus der Liste allItems zurueck
+     *
      * @return ein Item aus der Liste allItems
      */
     public ItemData getRandomItem() {
@@ -108,6 +107,7 @@ public class ItemFactory {
 
     /**
      * Gibt ein zufaelliges Item von einem bestimmten Typ aus der Liste allItems zurueck
+     *
      * @param type Typ des Items
      * @return ein zufaelliges Item von einem bestimmten Typ aus der Liste allItems
      */

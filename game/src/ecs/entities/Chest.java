@@ -19,9 +19,7 @@ public class Chest extends Entity {
     public static final List<String> DEFAULT_OPENING_ANIMATION_FRAMES =
             List.of(
                     "objects/treasurechest/chest_full_open_anim_f0.png",
-                    "objects/treasurechest/chest_full_open_anim_f1.png",
-                    "objects/treasurechest/chest_full_open_anim_f2.png",
-                    "objects/treasurechest/chest_empty_open_anim_f2.png");
+                    "objects/treasurechest/chest_full_open_anim_f1.png");
 
     /**
      * small Generator which uses the Item#ITEM_REGISTER
@@ -55,8 +53,8 @@ public class Chest extends Entity {
         AnimationComponent ac =
                 new AnimationComponent(
                         this,
-                        new Animation(DEFAULT_CLOSED_ANIMATION_FRAMES, 100, false),
-                        new Animation(DEFAULT_OPENING_ANIMATION_FRAMES, 100, false));
+                        new Animation(DEFAULT_CLOSED_ANIMATION_FRAMES, 10, false),
+                        new Animation(DEFAULT_OPENING_ANIMATION_FRAMES, 10, false));
     }
 
     private void dropItems(Entity entity) {
