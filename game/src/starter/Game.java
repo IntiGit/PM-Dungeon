@@ -195,7 +195,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         monsterLebensanzeige.update(hero);
         minigame.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
-        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) toggleMinigame();
+        if(minigame.gameIsCompleted()) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) toggleMinigame(null);
+        }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) minigame.getTileClickedOn();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
@@ -390,11 +392,11 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         }
     }
 
-    private void toggleMinigame() {
+    public static void toggleMinigame(Chest chest) {
         minigameActive = !minigameActive;
         systems.forEach(ECS_System::toggleRun);
         if(minigameActive) {
-            minigame.startNewGame();
+            minigame.startNewGame(chest);
             minigame.showMenu();
         } else {
             minigame.hideMenu();

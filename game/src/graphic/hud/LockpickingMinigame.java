@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 import controller.ScreenController;
 import ecs.components.skill.SkillTools;
+import ecs.entities.Chest;
 import ecs.entities.Entity;
 import graphic.hud.statDisplay.IHudElement;
 import starter.Game;
@@ -22,7 +23,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
      *      { [7][8][_] }
      */
 
-    private ScreenImage[][] solved = new ScreenImage[3][3];;
+    private ScreenImage[][] solved = new ScreenImage[3][3];
+    private Chest chest;
     private Set<T> images = new HashSet<>();
     private boolean hasStarted = false;
     private boolean completed = false;
@@ -48,7 +50,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         hideMenu();
     }
 
-    public void startNewGame() {
+    public void startNewGame(Chest c) {
+        chest = c;
         hasStarted = true;
         completed = false;
         emptyX = 2;
@@ -93,6 +96,9 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     }
 
     public void getTileClickedOn() {
+        if(!hasStarted) {
+            return;
+        }
         Vector3 mouseWorldPosition =
             new Vector3(
                 SkillTools.getCursorPositionAsPoint().x,
@@ -144,6 +150,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                 }
             }
         }
+        chest.setLocked(false);
+        chest.dropItems(chest);
         return true;
     }
 
