@@ -196,11 +196,11 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         minigame.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if(minigame.gameIsCompleted()) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) toggleMinigame(null);
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) toggleMinigame(null);
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) minigame.getTileClickedOn();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
-        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
+        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get()) && !minigameActive) toggleInventory();
         if (inventoryOpen && bagOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
                 inventaranzeige.selectNextItemVertical();
