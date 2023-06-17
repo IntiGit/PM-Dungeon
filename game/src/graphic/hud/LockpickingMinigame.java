@@ -1,11 +1,15 @@
 package graphic.hud;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 import controller.ScreenController;
+import ecs.components.skill.SkillTools;
 import ecs.entities.Entity;
 import graphic.hud.statDisplay.IHudElement;
+import starter.Game;
 import tools.Constants;
 import tools.Point;
 
@@ -14,15 +18,15 @@ import java.util.*;
 public class LockpickingMinigame<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private ScreenImage[][] picture = new ScreenImage[3][3];
-    /*      { [1][2][3] }       oben  = i-1  unten  = i+1
-     *      { [4][5][6] }       links = j-1  rechts = j+1
+    /*      { [1][2][3] }       oben  = j-1  unten  = j+1
+     *      { [4][5][6] }       links = i-1  rechts = i+1
      *      { [7][8][_] }
      */
 
     private Set<T> images = new HashSet<>();
 
-    private int emptyX = 2;
-    private int emptyY = 2;
+    private int emptyX;
+    private int emptyY;
 
     private Random rng = new Random();
 
@@ -39,18 +43,19 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     public LockpickingMinigame(SpriteBatch batch) {
         super(batch);
         MinigamePicturePaths.setupPictureList();
-        showMenu();
+        hideMenu();
     }
 
     public void startNewGame() {
+        emptyX = 2;
+        emptyY = 2;
         List<String> picturePath = MinigamePicturePaths.getRandomPicture();
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
-                picture[i][j] = new ScreenImage(picturePath.get(i * 3 + j), new Point(0, 0));
+                picture[j][i] = new ScreenImage(picturePath.get(i * 3 + j), new Point(0, 0));
             }
         }
         shuffle();
-
     }
 
     private void shuffle() {
@@ -61,28 +66,53 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     }
 
     private void findAndDoRandomSwap() {
-        int i = emptyY;
-        int j = emptyX;
         List<int[]> swapWith= new ArrayList<>();
 
-        if(i-1 >= 0) swapWith.add(new int[]{i-1,j}); //Wenn oben existiert
-        if(i+1 <= 2) swapWith.add(new int[]{i+1,j}); //Wenn unten existiert
-        if(j-1 >= 0) swapWith.add(new int[]{i,j-1}); //Wenn links existiert
-        if(j+1 <= 2) swapWith.add(new int[]{i,j+1}); //Wenn rechts existiert
+        if(emptyY-1 >= 0) swapWith.add(new int[]{emptyX, emptyY-1}); //Wenn oben existiert
+        if(emptyY+1 <= 2) swapWith.add(new int[]{emptyX, emptyY+1}); //Wenn unten existiert
+        if(emptyX-1 >= 0) swapWith.add(new int[]{emptyX-1,emptyY}); //Wenn links existiert
+        if(emptyX+1 <= 2) swapWith.add(new int[]{emptyX+1,emptyY}); //Wenn rechts existiert
 
-        int[] swapIndex = swapWith.get(rng.nextInt(0,swapWith.size())); // y,x
-
+        int[] swapIndex = swapWith.get(rng.nextInt(0,swapWith.size()));
         swap(picture,swapIndex);
 
     }
 
     private void swap(ScreenImage[][] pic, int[] swapWithIndex) {
-        ScreenImage tmp = pic[emptyY][emptyX];
-        pic[emptyY][emptyX] = pic[swapWithIndex[0]][swapWithIndex[1]];
+        ScreenImage tmp = pic[emptyX][emptyY];
+        pic[emptyX][emptyY] = pic[swapWithIndex[0]][swapWithIndex[1]];
         pic[swapWithIndex[0]][swapWithIndex[1]] = tmp;
 
-        emptyY = swapWithIndex[0];
-        emptyX = swapWithIndex[1];
+        emptyX = swapWithIndex[0];
+        emptyY = swapWithIndex[1];
+    }
+
+    public void getTileClickedOn() {
+        Vector3 mouseWorldPosition =
+            new Vector3(
+                SkillTools.getCursorPositionAsPoint().x,
+                SkillTools.getCursorPositionAsPoint().y,
+                0);
+
+        Vector3 mouseScreenPosition = Game.camera.project(mouseWorldPosition);
+
+        for(int i = 0; i < picture.length; i++) {
+            for(int j = 0; j < picture[0].length; j++) {
+                ScreenImage si = picture[j][i];
+                float siLeft = si.getX();
+                float siRight = si.getX() + si.getWidth() * si.getScaleX();
+
+                float siBottom = si.getY();
+                float siTop = si.getY() + si.getHeight() * si.getScaleY();
+
+                if(mouseScreenPosition.x >= siLeft && mouseScreenPosition.x <= siRight) {
+                    if(mouseScreenPosition.y >= siBottom && mouseScreenPosition.y <= siTop) {
+                        si.setColor(Color.CORAL);
+                    }
+                }
+            }
+        }
+
     }
 
     @Override
@@ -93,11 +123,12 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         images.clear();
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
-                ScreenImage si = picture[i][j];
+                ScreenImage si = picture[j][i];
                 if(si != null) {
+                    si.setScale(4);
                     si.setPosition(
-                        Constants.WINDOW_WIDTH / 4 + (i + 1) * si.getWidth() * 2,
-                        Constants.WINDOW_HEIGHT / 3 + (j + 1) * si.getHeight() * 2,
+                        Constants.WINDOW_WIDTH / 4 + (j + 1) * si.getWidth() * si.getScaleX(),
+                        Constants.WINDOW_HEIGHT / 1.5f - (i + 1) * si.getHeight() * si.getScaleY(),
                         Align.center | Align.bottom
                     );
                     add((T) si);
@@ -109,11 +140,11 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
 
     @Override
     public void showMenu() {
-
+        this.forEach((Actor s) -> s.setVisible(true));
     }
 
     @Override
     public void hideMenu() {
-
+        this.forEach((Actor s) -> s.setVisible(false));
     }
 }

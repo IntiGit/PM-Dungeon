@@ -41,6 +41,7 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
+import org.lwjgl.system.windows.TOUCHINPUT;
 import quests.*;
 import tools.Constants;
 import tools.Point;
@@ -76,6 +77,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     public static boolean bagOpen = false;
 
     public static boolean questScreenOpen = false;
+
+    private static boolean minigameActive = false;
 
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
@@ -192,7 +195,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         monsterLebensanzeige.update(hero);
         minigame.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) minigame.startNewGame();//togglePause();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.M)) toggleMinigame();
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) minigame.getTileClickedOn();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
         if (inventoryOpen && bagOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
@@ -382,6 +387,17 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             skillanzeige.showMenu();
 
             inventaranzeige.hideMenu();
+        }
+    }
+
+    private void toggleMinigame() {
+        minigameActive = !minigameActive;
+        systems.forEach(ECS_System::toggleRun);
+        if(minigameActive) {
+            minigame.startNewGame();
+            minigame.showMenu();
+        } else {
+            minigame.hideMenu();
         }
     }
 
