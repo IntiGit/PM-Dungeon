@@ -190,6 +190,23 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                 }
             }
         }
+        if(!Arrays.deepEquals(picture, solved)) {
+            ScreenText quit =
+                new ScreenText(
+                    "Drücke ESC um das Spiel abzubrechen",
+                    new Point(0, 0),
+                    1,
+                    new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
+                        .setFontcolor(Color.LIGHT_GRAY)
+                        .build());
+            quit.setFontScale(2);
+            quit.setPosition(
+                quit.getWidth()/1.3f,
+                Constants.WINDOW_HEIGHT - quit.getHeight() * 4f,
+                Align.center | Align.bottom);
+            add((T) quit);
+            images.add((T) quit);
+        }
         if(hasStarted && checkIfComplete()) {
             hasStarted = false;
             completed = true;
