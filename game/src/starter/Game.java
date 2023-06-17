@@ -197,6 +197,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
         if(minigame.gameIsCompleted()) {
             if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) toggleMinigame(null);
+        } else if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && minigameActive) {
+            toggleMinigame(null);
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) minigame.getTileClickedOn();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
@@ -399,7 +401,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             minigame.startNewGame(chest);
             minigame.showMenu();
         } else {
-            minigame.hideMenu();
+            minigame.endGame();
         }
     }
 

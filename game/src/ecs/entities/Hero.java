@@ -113,8 +113,8 @@ public class Hero extends Entity implements ILevelUp {
                         this,
                         10,
                         new OnHeroDeath(),
-                        new Animation(List.of("knight_m_hit_anim_f0.png"), 300),
-                        new Animation(List.of("knight_m_hit_anim_f0.png"), 300));
+                        AnimationBuilder.buildAnimation("character/knight/hit/knight_m_hit_anim_f0.png"),
+                        AnimationBuilder.buildAnimation("character/knight/hit/knight_m_hit_anim_f0.png"));
 
         hc.setCurrentHealthpoints(hc.getMaximalHealthpoints());
     }

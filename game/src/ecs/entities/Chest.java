@@ -112,6 +112,10 @@ public class Chest extends Entity {
                 (float) Math.sin(radian * Math.PI) + positionComponent.getPosition().y);
     }
 
+    public boolean getLocked() {
+        return locked;
+    }
+
     public void setLocked(boolean islocked) {
         locked = islocked;
     }

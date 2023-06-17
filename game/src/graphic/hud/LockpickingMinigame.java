@@ -1,10 +1,12 @@
 package graphic.hud;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 import controller.ScreenController;
+import ecs.components.InteractionComponent;
 import ecs.components.skill.SkillTools;
 import ecs.entities.Chest;
 import ecs.entities.Entity;
@@ -151,12 +153,20 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
             }
         }
         chest.setLocked(false);
-        chest.dropItems(chest);
+        InteractionComponent iac =
+            (InteractionComponent) chest.getComponent(InteractionComponent.class).orElseThrow();
+        iac.triggerInteraction();
         return true;
     }
 
     public boolean gameIsCompleted() {
         return completed;
+    }
+
+    public void endGame() {
+        completed = false;
+        hasStarted = false;
+        hideMenu();
     }
 
     @Override
@@ -183,7 +193,23 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         if(hasStarted && checkIfComplete()) {
             hasStarted = false;
             completed = true;
-            System.out.println("COMPLETE");
+        }
+        if(!hasStarted && completed) {
+            ScreenText text =
+                new ScreenText(
+                    "Geschafft"+ "\n" + "Drücke die linke Maustaste",
+                    new Point(0, 0),
+                    1,
+                    new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
+                        .setFontcolor(Color.RED)
+                        .build());
+            text.setFontScale(2);
+            text.setPosition(
+                Constants.WINDOW_WIDTH / 2f,
+                Constants.WINDOW_HEIGHT -  (text.getHeight() * 1.5f),
+                Align.center | Align.bottom);
+            add((T) text);
+            images.add((T) text);
         }
     }
 
