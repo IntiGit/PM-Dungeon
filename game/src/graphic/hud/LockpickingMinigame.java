@@ -1,6 +1,5 @@
 package graphic.hud;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -23,7 +22,10 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
      *      { [7][8][_] }
      */
 
+    private ScreenImage[][] solved = new ScreenImage[3][3];;
     private Set<T> images = new HashSet<>();
+    private boolean hasStarted = false;
+    private boolean completed = false;
 
     private int emptyX;
     private int emptyY;
@@ -47,12 +49,15 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     }
 
     public void startNewGame() {
+        hasStarted = true;
+        completed = false;
         emptyX = 2;
         emptyY = 2;
         List<String> picturePath = MinigamePicturePaths.getRandomPicture();
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 picture[j][i] = new ScreenImage(picturePath.get(i * 3 + j), new Point(0, 0));
+                solved[j][i] = picture[j][i];
             }
         }
         shuffle();
@@ -96,8 +101,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
 
         Vector3 mouseScreenPosition = Game.camera.project(mouseWorldPosition);
 
-        for(int i = 0; i < picture.length; i++) {
-            for(int j = 0; j < picture[0].length; j++) {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
                 ScreenImage si = picture[j][i];
                 float siLeft = si.getX();
                 float siRight = si.getX() + si.getWidth() * si.getScaleX();
@@ -105,14 +110,45 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                 float siBottom = si.getY();
                 float siTop = si.getY() + si.getHeight() * si.getScaleY();
 
-                if(mouseScreenPosition.x >= siLeft && mouseScreenPosition.x <= siRight) {
-                    if(mouseScreenPosition.y >= siBottom && mouseScreenPosition.y <= siTop) {
-                        si.setColor(Color.CORAL);
+                if(mouseScreenPosition.x > siLeft && mouseScreenPosition.x < siRight) {
+                    if(mouseScreenPosition.y > siBottom && mouseScreenPosition.y < siTop) {
+                        swapIfPossible(picture, new int[]{j, i});
+                        return;
                     }
                 }
             }
         }
 
+    }
+
+    private void swapIfPossible(ScreenImage[][] pic, int[] swapIndex) {
+        boolean canSwap = false;
+
+        if(emptyX-1 == swapIndex[0] && emptyY == swapIndex[1]) canSwap = true;  //schau links
+        else if(emptyX+1 == swapIndex[0] && emptyY == swapIndex[1]) canSwap = true;  //schau rechts
+        else if(emptyX == swapIndex[0] && emptyY-1 == swapIndex[1]) canSwap = true;  //schau oben
+        else if(emptyX == swapIndex[0] && emptyY+1 == swapIndex[1]) canSwap = true;  //schau unten
+
+        if(canSwap) {
+            swap(picture, swapIndex);
+        }
+    }
+
+    private boolean checkIfComplete() {
+        for(int i = 0; i < 3; i++) {
+            for(int j = 0; j < 3; j++) {
+                if(picture != null && picture[j][i] != null) {
+                    if (!picture[j][i].equals(solved[j][i])) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean gameIsCompleted() {
+        return completed;
     }
 
     @Override
@@ -135,6 +171,11 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                     images.add((T) si);
                 }
             }
+        }
+        if(hasStarted && checkIfComplete()) {
+            hasStarted = false;
+            completed = true;
+            System.out.println("COMPLETE");
         }
     }
 
