@@ -24,6 +24,7 @@ import ecs.systems.*;
 import graphic.DungeonCamera;
 import graphic.Painter;
 import graphic.hud.GameOverMenu;
+import graphic.hud.LockpickingMinigame;
 import graphic.hud.PauseMenu;
 import graphic.hud.Questanzeige;
 import graphic.hud.statDisplay.*;
@@ -95,6 +96,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private static Skillanzeige<Actor> skillanzeige;
     private static Inventaranzeige<Actor> inventaranzeige;
     public static Questanzeige<Actor> questanzeige;
+    public static LockpickingMinigame<Actor> minigame;
 
     public static ILevel currentLevel;
     private static Entity hero;
@@ -161,6 +163,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         skillanzeige = new Skillanzeige<>();
         inventaranzeige = new Inventaranzeige<>();
         questanzeige = new Questanzeige<>();
+        minigame = new LockpickingMinigame<>();
 
         controller.add(pauseMenu);
         controller.add(gameover);
@@ -170,6 +173,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         controller.add(skillanzeige);
         controller.add(inventaranzeige);
         controller.add(questanzeige);
+        controller.add(minigame);
 
         if (hero instanceof Hero h) {
             h.register(lebensanzeige);
@@ -186,8 +190,9 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         setCameraFocus();
         manageEntitiesSets();
         monsterLebensanzeige.update(hero);
+        minigame.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
-        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
+        if (Gdx.input.isKeyJustPressed(Input.Keys.P)) minigame.startNewGame();//togglePause();
         if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
         if (inventoryOpen && bagOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {

@@ -21,6 +21,7 @@ public class Chest extends Entity {
                     "objects/treasurechest/chest_full_open_anim_f0.png",
                     "objects/treasurechest/chest_full_open_anim_f1.png");
 
+    private boolean locked = false;
     /**
      * small Generator which uses the Item#ITEM_REGISTER
      *
@@ -55,6 +56,11 @@ public class Chest extends Entity {
                         this,
                         new Animation(DEFAULT_CLOSED_ANIMATION_FRAMES, 10, false),
                         new Animation(DEFAULT_OPENING_ANIMATION_FRAMES, 10, false));
+
+        Random rng = new Random();
+        if(rng.nextInt(0,5) == 0) {
+            locked = true;
+        }
     }
 
     private void dropItems(Entity entity) {
