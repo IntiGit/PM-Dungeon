@@ -16,16 +16,19 @@ import tools.Constants;
 import tools.Point;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 public class LockpickingMinigame<T extends Actor> extends ScreenController<T> implements IHudElement {
 
-    private ScreenImage[][] picture = new ScreenImage[3][3];
+    private final Logger minigameLogger = Logger.getLogger(this.getClass().getName());
+
+    private ScreenImage[][] picture;
     /*      { [1][2][3] }       oben  = j-1  unten  = j+1
      *      { [4][5][6] }       links = i-1  rechts = i+1
      *      { [7][8][_] }
      */
 
-    private ScreenImage[][] solved = new ScreenImage[3][3];
+    private ScreenImage[][] solved;
     private Chest chest;
     private Set<T> images = new HashSet<>();
     private boolean hasStarted = false;
@@ -53,6 +56,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     }
 
     public void startNewGame(Chest c) {
+        picture = new ScreenImage[3][3];
+        solved = new ScreenImage[3][3];
         chest = c;
         hasStarted = true;
         completed = false;
@@ -66,11 +71,16 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
             }
         }
         shuffle();
+        minigameLogger.info("Bring die einzelnen Teile wieder in die richtige Reihenfolge \n" +
+                            "Du kannst ein Teil durch anklicken auf das leere Feld verschieben");
     }
 
     private void shuffle() {
         int iterations = rng.nextInt(10,31);
         for(int i = 0; i < iterations; i++) {
+            findAndDoRandomSwap();
+        }
+        if(emptyX == 2 && emptyY == 2) {
             findAndDoRandomSwap();
         }
     }
@@ -152,6 +162,7 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                 }
             }
         }
+        minigameLogger.info("Geschafft! Die Truhe ist nun offen");
         chest.setLocked(false);
         InteractionComponent iac =
             (InteractionComponent) chest.getComponent(InteractionComponent.class).orElseThrow();
@@ -166,6 +177,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     public void endGame() {
         completed = false;
         hasStarted = false;
+        picture = null;
+        solved = null;
         hideMenu();
     }
 
@@ -175,18 +188,20 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
             remove(t);
         }
         images.clear();
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                ScreenImage si = picture[j][i];
-                if(si != null) {
-                    si.setScale(4);
-                    si.setPosition(
-                        Constants.WINDOW_WIDTH / 4 + (j + 1) * si.getWidth() * si.getScaleX(),
-                        Constants.WINDOW_HEIGHT / 1.5f - (i + 1) * si.getHeight() * si.getScaleY(),
-                        Align.center | Align.bottom
-                    );
-                    add((T) si);
-                    images.add((T) si);
+        if(picture != null) {
+            for(int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++) {
+                    ScreenImage si = picture[j][i];
+                    if (si != null) {
+                        si.setScale(4);
+                        si.setPosition(
+                            Constants.WINDOW_WIDTH / 4 + (j + 1) * si.getWidth() * si.getScaleX(),
+                            Constants.WINDOW_HEIGHT / 1.5f - (i + 1) * si.getHeight() * si.getScaleY(),
+                            Align.center | Align.bottom
+                        );
+                        add((T) si);
+                        images.add((T) si);
+                    }
                 }
             }
         }
@@ -214,7 +229,7 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         if(!hasStarted && completed) {
             ScreenText text =
                 new ScreenText(
-                    "Geschafft"+ "\n" + "Drücke die linke Maustaste",
+                    "Geschafft\nDrücke\ndie\nlinke\nMaustaste",
                     new Point(0, 0),
                     1,
                     new LabelStyleBuilder(FontBuilder.DEFAULT_FONT)
@@ -222,8 +237,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                         .build());
             text.setFontScale(2);
             text.setPosition(
-                Constants.WINDOW_WIDTH / 2f,
-                Constants.WINDOW_HEIGHT -  (text.getHeight() * 1.5f),
+                text.getWidth(),
+                Constants.WINDOW_HEIGHT - text.getHeight() * 2f,
                 Align.center | Align.bottom);
             add((T) text);
             images.add((T) text);

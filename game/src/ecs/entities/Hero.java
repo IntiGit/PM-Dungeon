@@ -215,6 +215,7 @@ public class Hero extends Entity implements ILevelUp {
     public void receiveQuestReward(Quest q) {
         XPComponent xpc = (XPComponent) getComponent(XPComponent.class).orElseThrow();
         xpc.addXP(q.getRewardXP());
+        heroLogger.info("Quest " + q.getDescription() + " abgeschlossen (+" + q.getRewardXP() + " XP)");
     }
 
     /** Banachrichtigt alle Observer des Helden */

@@ -17,10 +17,12 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 
 public class Questanzeige<T extends Actor> extends ScreenController<T> implements IHudElement {
 
+    private final Logger questLogger = Logger.getLogger(this.getClass().getName());
     private List<Quest> questList = new ArrayList<>();
     public static Set<Quest> givenQuests = new HashSet<>();
 
@@ -140,6 +142,7 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
         h.addQuest(toCheck);
         givenQuests.add(toCheck);
         clearAcceptDenyText();
+        questLogger.info("Quest " + toCheck.getDescription() + " angenommen");
     }
 
     public void clearAcceptDenyText() {

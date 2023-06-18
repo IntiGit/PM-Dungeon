@@ -8,7 +8,7 @@ public class FillInventoryQuest extends Quest {
     private InventoryComponent ic;
 
     public FillInventoryQuest() {
-        description = "Fülle alle Slots deines Inventars";
+        description = "Fuelle alle Slots deines Inventars";
         rewardXP = 120;
         progress = 0;
     }

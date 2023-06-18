@@ -402,6 +402,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             minigame.showMenu();
         } else {
             minigame.endGame();
+            minigame.hideMenu();
         }
     }
 
