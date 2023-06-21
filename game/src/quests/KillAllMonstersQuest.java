@@ -7,11 +7,17 @@ import starter.Game;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Klasse für eine Quest in der man alle Monster im Level besiegen muss
+ */
 public class KillAllMonstersQuest extends Quest {
 
     private Set<Monster> monsters;
     private int amountToKill = 0;
 
+    /**
+     * Konstruktor für die Klasse KillAllMonstersQuest
+     */
     public KillAllMonstersQuest() {
         description = "Besiege alle Monster eines Levels";
         rewardXP = 150;
@@ -27,6 +33,11 @@ public class KillAllMonstersQuest extends Quest {
         }
     }
 
+    /**
+     * Setzt das Monsterset
+     * Set an Monstern welche getöten werden müssen
+     * @param entities
+     */
     public void setMonsterSet(Set<Entity> entities) {
         monsters =
             entities.stream()
@@ -35,6 +46,9 @@ public class KillAllMonstersQuest extends Quest {
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Liest die Größe des Monster Sets und bestimmt somit wie viele Monster besiegt werden müssen
+     */
     public void setAmountToKill() {
         amountToKill = Game.getEntities().stream()
             .filter((m) -> m instanceof Monster)

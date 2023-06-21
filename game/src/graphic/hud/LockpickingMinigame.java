@@ -22,6 +22,10 @@ import tools.Point;
 import java.util.*;
 import java.util.logging.Logger;
 
+/**
+ * Klasse welche das Lockpicking-Spiel anzeigt
+ * @param <T>
+ */
 public class LockpickingMinigame<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private final Logger minigameLogger = Logger.getLogger(this.getClass().getName());
@@ -45,6 +49,9 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
 
     List<String> picturePath;
 
+    /**
+     * Konstruktor für die Klasse LockpickingMinigame
+     */
     public LockpickingMinigame() {
         this(new SpriteBatch());
     }
@@ -61,6 +68,10 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         hideMenu();
     }
 
+    /**
+     * Startet das Lockpicking-Spiel
+     * @param c Kiste die der Spieler gerade versucht zu öffnen
+     */
     public void startNewGame(Chest c) {
         picture = new ScreenImage[3][3];
         solved = new ScreenImage[3][3];
@@ -121,6 +132,10 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         emptyY = swapWithIndex[1];
     }
 
+    /**
+     * Findet das Bild auf das Spieler geklickt hat
+     * und tauscht es falls möglich mit dem leeren Platz
+     */
     public void getTileClickedOn() {
         if(!hasStarted) {
             return;
@@ -184,10 +199,17 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         return true;
     }
 
+    /**
+     * Gibt an ob das Lockpicking-Spiel gelöst wurde
+     * @return true wenn das Lockpicking-Spiel gelöst ist
+     */
     public boolean gameIsCompleted() {
         return completed;
     }
 
+    /**
+     * Beendet das Lockpicking-Spiel
+     */
     public void endGame() {
         completed = false;
         hasStarted = false;

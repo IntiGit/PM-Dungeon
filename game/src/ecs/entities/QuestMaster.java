@@ -7,11 +7,18 @@ import graphic.Animation;
 import quests.Quest;
 import starter.Game;
 
+/**
+ * Klasse die einen NPC realisiert, der Quests vergibt
+ */
 public class QuestMaster extends Entity implements IInteraction {
 
     private final String pathToTexture = "character/questMaster/questmaster.png";
     private Quest quest;
 
+    /**
+     * Konstruktpr für die Klasse QuestMaster
+     * @param questToGive Quest die dem Spieler vorgeschlagen werden soll
+     */
     public QuestMaster(Quest questToGive) {
         quest = questToGive;
 
@@ -40,11 +47,6 @@ public class QuestMaster extends Entity implements IInteraction {
 
     @Override
     public void onInteraction(Entity entity) {
-        System.out.println(entity.getClass().getSimpleName());
-
-        Hero h = (Hero) Game.getHero().get();
-        int s = h.getMyQuests().size();
-
         Game.questanzeige.QuestAcceptDeny(quest);
         Game.questScreenOpen = true;
         removeComponent(InteractionComponent.class);

@@ -7,6 +7,11 @@ import starter.Game;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Klasse für das Questsystem
+ * Ruft jeden Frame advanceProgress auf allen Quests des Helden auf
+ * Prüft jeden Frame ob eine Quest des Helden abgeschlossen ist
+ */
 public class QuestSystem extends ECS_System{
 
     private Set<Quest> toRemove = new HashSet<>();

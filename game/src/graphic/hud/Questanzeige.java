@@ -19,17 +19,22 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
-
+/**
+ * Klasse welche die aktiven Quests als ScreenText anzeigt
+ * @param <T>
+ */
 public class Questanzeige<T extends Actor> extends ScreenController<T> implements IHudElement {
 
     private final Logger questLogger = Logger.getLogger(this.getClass().getName());
     private List<Quest> questList = new ArrayList<>();
-    public static Set<Quest> givenQuests = new HashSet<>();
 
     private Set<T> questAcceptText = new HashSet<>();
     private Set<T> screenTexts = new HashSet<>();
     private Quest toCheck;
 
+    /**
+     * Konstruktor für die Klasse Questanzeige
+     */
     public Questanzeige() {
         this(new SpriteBatch());
     }
@@ -67,6 +72,9 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
         this.forEach((Actor s) -> s.setVisible(false));
     }
 
+    /**
+     * Zeigt alle Quests an die der Held gerade hat
+     */
     public void showActiveQuests() {
         removeAll();
         int count = 1;
@@ -90,6 +98,10 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
         }
     }
 
+    /**
+     * Zeigt eine Quest und die Möglichkeit zum Annehmen/Ablehnen der Quest an
+     * @param q Quest die Angenommen/Abgelehnt werden soll
+     */
     public void QuestAcceptDeny(Quest q) {
         toCheck = q;
         ScreenText questText =
@@ -137,14 +149,19 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
         questAcceptText.add((T) deny);
     }
 
+    /**
+     * Fügt eine akzeptierte Quest dem Helden hinzu
+     */
     public void acceptQuest() {
         Hero h = (Hero) Game.getHero().get();
         h.addQuest(toCheck);
-        givenQuests.add(toCheck);
         clearAcceptDenyText();
         questLogger.info("Quest " + toCheck.getDescription() + " angenommen");
     }
 
+    /**
+     * Löscht vor jedem Zeichnen die Anzeige für das akzeptieren/ablehnen
+     */
     public void clearAcceptDenyText() {
         for (T t : questAcceptText) {
             remove(t);
@@ -152,6 +169,9 @@ public class Questanzeige<T extends Actor> extends ScreenController<T> implement
         questAcceptText.clear();
     }
 
+    /**
+     * Entfert vor dem Zeichnen die alten Zeichnungen/ScreenTexte
+     */
     private void removeAll() {
         for (T t : screenTexts) {
             remove(t);

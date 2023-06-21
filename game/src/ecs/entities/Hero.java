@@ -7,7 +7,6 @@ import ecs.components.xp.ILevelUp;
 import ecs.components.xp.XPComponent;
 import ecs.items.Schuhe;
 import ecs.items.Waffe;
-import ecs.systems.QuestSystem;
 import graphic.Animation;
 import graphic.hud.statDisplay.IHudElement;
 import quests.FillInventoryQuest;
@@ -190,6 +189,10 @@ public class Hero extends Entity implements ILevelUp {
         observer.add(hudElement);
     }
 
+    /**
+     * Gibt dem Helden eine Quest
+     * @param q Quest die der Held erhalten soll
+     */
     public void addQuest(Quest q) {
         myQuests.add(q);
         if(q instanceof KillAllMonstersQuest kamQ) {
@@ -203,15 +206,27 @@ public class Hero extends Entity implements ILevelUp {
         Game.questanzeige.update(this);
     }
 
+    /**
+     * Entfernt eine Quest vom Helden
+     * @param q Quest die entfernt werden soll
+     */
     public void removeQuest(Quest q) {
         myQuests.remove(q);
         Game.questanzeige.update(this);
     }
 
+    /**
+     * Getter für die Liste alle Quests des Helden
+     * @return Liste aller Quests des Helden
+     */
     public List<Quest> getMyQuests() {
         return myQuests;
     }
 
+    /**
+     * Gibt dem Helden die XP für eine abgeschlossene Quest
+     * @param q Quest die abgeschlossen wurde
+     */
     public void receiveQuestReward(Quest q) {
         XPComponent xpc = (XPComponent) getComponent(XPComponent.class).orElseThrow();
         xpc.addXP(q.getRewardXP());

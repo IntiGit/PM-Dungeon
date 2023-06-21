@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Klasse in der Pfade zu Bildern abgespeichert sind
+ * Bilder für das Lockpicking-Spiel
+ */
 public class MinigamePicturePaths {
     private static Random rng = new Random();
 
@@ -31,11 +35,18 @@ public class MinigamePicturePaths {
         "minigame/blumenpuzzle/blumen7.png",
         "minigame/blumenpuzzle/blumen8.png");
 
+    /**
+     * speichert alle Bilder in einer Liste
+     */
     public static void setupPictureList() {
         pictureList.add(test);
         pictureList.add(blumenBild);
     }
 
+    /**
+     * Gibt eine zufällige Liste aus Pfaden aus der Liste der Bilder zurück
+     * @return eine Liste aus Pfaden zu Bildern
+     */
     public static List<String> getRandomPicture() {
         return pictureList.get(rng.nextInt(0, pictureList.size()));
     }

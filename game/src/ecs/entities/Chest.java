@@ -64,6 +64,10 @@ public class Chest extends Entity {
 
     }
 
+    /**
+     * Dropt die Items in der Kiste, wenn sie nicht verschlossen ist
+     * @param entity
+     */
     public void dropItems(Entity entity) {
         if(locked) {
             Game.toggleMinigame(this);
