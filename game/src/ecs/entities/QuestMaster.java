@@ -7,9 +7,7 @@ import graphic.Animation;
 import quests.Quest;
 import starter.Game;
 
-/**
- * Klasse die einen NPC realisiert, der Quests vergibt
- */
+/** Klasse die einen NPC realisiert, der Quests vergibt */
 public class QuestMaster extends Entity implements IInteraction {
 
     private final String pathToTexture = "character/questMaster/questmaster.png";
@@ -17,6 +15,7 @@ public class QuestMaster extends Entity implements IInteraction {
 
     /**
      * Konstruktpr für die Klasse QuestMaster
+     *
      * @param questToGive Quest die dem Spieler vorgeschlagen werden soll
      */
     public QuestMaster(Quest questToGive) {
@@ -42,7 +41,7 @@ public class QuestMaster extends Entity implements IInteraction {
     }
 
     private void setupInteractionComponent() {
-        new InteractionComponent(this,1,true,this);
+        new InteractionComponent(this, 1, true, this);
     }
 
     @Override

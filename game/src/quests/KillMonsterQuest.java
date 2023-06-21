@@ -5,7 +5,6 @@ import ecs.entities.monsters.Monster;
 import starter.Game;
 
 /**
- *
  * Klasse für eine Quest in der eine bestimmte Anzahl eines bestimmten Monsters besiegt werden muss
  */
 public class KillMonsterQuest extends Quest {
@@ -16,13 +15,15 @@ public class KillMonsterQuest extends Quest {
 
     /**
      * Konstruktor für die Klasse KillMonsterQuest
+     *
      * @param m Monsterart die besiegt werden muss
      * @param amount Anzahl an Monstern die besiegt werden muss
      */
-    public KillMonsterQuest(Monster m, int amount){
+    public KillMonsterQuest(Monster m, int amount) {
         this.amount = amount;
         this.monster = m;
-        description = "Besiege " + amount + " " + this.monster.getClass().getSimpleName() + " Monster";
+        description =
+                "Besiege " + amount + " " + this.monster.getClass().getSimpleName() + " Monster";
         rewardXP = 100;
         progress = 0;
     }
@@ -34,12 +35,12 @@ public class KillMonsterQuest extends Quest {
     }
 
     /**
-     * Erhöht den killCount
-     * killCOunt zeigt wie viele Monster bereits besiegt wurden
+     * Erhöht den killCount killCOunt zeigt wie viele Monster bereits besiegt wurden
+     *
      * @param e Monster, welches gerade besiegt wurde
      */
     public void addToKillcount(Entity e) {
-        if(e.getClass().equals(monster.getClass())) {
+        if (e.getClass().equals(monster.getClass())) {
             killCount++;
         }
     }

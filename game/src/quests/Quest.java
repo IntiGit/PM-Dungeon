@@ -1,36 +1,25 @@
 package quests;
 
-/**
- * Oberklasse für alle Quests
- */
+/** Oberklasse für alle Quests */
 public abstract class Quest {
-    /**
-     * Name bzw. Titel der Quest
-     */
+    /** Name bzw. Titel der Quest */
     protected String title;
 
-    /**
-     * Beschreibung der Quest
-     */
+    /** Beschreibung der Quest */
     protected String description;
 
-    /**
-     * XP Menge die man als Belohnung kriegt
-     */
+    /** XP Menge die man als Belohnung kriegt */
     protected int rewardXP;
 
-    /**
-     * Fortschritt der Quest in Prozent [0.00% - 100.00%]
-     */
+    /** Fortschritt der Quest in Prozent [0.00% - 100.00%] */
     protected float progress;
 
-    /**
-     * Prüft Bedingungen für den Fortschriit der Quest und setzt den Fortschritt
-     */
+    /** Prüft Bedingungen für den Fortschriit der Quest und setzt den Fortschritt */
     public abstract void advanceProgress();
 
     /**
      * Getter für den Fortschritt der Quest
+     *
      * @return Fortschritt der Quest in Prozent
      */
     public float getProgress() {
@@ -39,6 +28,7 @@ public abstract class Quest {
 
     /**
      * Getter für die Belohnungs-XP der Quest
+     *
      * @return
      */
     public int getRewardXP() {
@@ -47,6 +37,7 @@ public abstract class Quest {
 
     /**
      * Getter für die Beschreibung der Quest
+     *
      * @return
      */
     public String getDescription() {
@@ -55,9 +46,10 @@ public abstract class Quest {
 
     /**
      * Prüft ob die Quest abgeschlossen ist
+     *
      * @return true wenn progress = 100 (gerundet)
      */
-    public boolean isCompleted(){
+    public boolean isCompleted() {
         return Math.round(progress) == 100;
     }
 }

@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
 import level.IOnLevelLoader;
 import level.LevelAPI;
 import level.elements.ILevel;
@@ -41,7 +40,6 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
-import org.lwjgl.system.windows.TOUCHINPUT;
 import quests.*;
 import tools.Constants;
 import tools.Point;
@@ -195,14 +193,15 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         monsterLebensanzeige.update(hero);
         minigame.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
-        if(minigame.gameIsCompleted()) {
+        if (minigame.gameIsCompleted()) {
             if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) toggleMinigame(null);
-        } else if(Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && minigameActive) {
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && minigameActive) {
             toggleMinigame(null);
         }
         if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) minigame.getTileClickedOn();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
-        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get()) && !minigameActive) toggleInventory();
+        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get()) && !minigameActive)
+            toggleInventory();
         if (inventoryOpen && bagOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
                 inventaranzeige.selectNextItemVertical();
@@ -250,8 +249,6 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             questanzeige.acceptQuest();
             systems.forEach(ECS_System::toggleRun);
         }
-
-
     }
 
     @Override
@@ -284,8 +281,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     }
 
     private void manageEntitiesSets() {
-        for(Entity e : entitiesToRemove) {
-            if(e instanceof Monster m) {
+        for (Entity e : entitiesToRemove) {
+            if (e instanceof Monster m) {
                 Hero h = (Hero) getHero().get();
                 List<Quest> heroQuests = h.getMyQuests();
                 for (Quest q : heroQuests) {
@@ -295,7 +292,6 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
                 }
             }
         }
-
 
         entities.removeAll(entitiesToRemove);
         entities.addAll(entitiesToAdd);
@@ -308,7 +304,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         entitiesToRemove.clear();
         entitiesToAdd.clear();
 
-        if(levelJustLoaded) {
+        if (levelJustLoaded) {
             Hero h = (Hero) getHero().get();
             List<Quest> heroQuests = h.getMyQuests();
             for (Quest q : heroQuests) {
@@ -397,7 +393,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     public static void toggleMinigame(Chest chest) {
         minigameActive = !minigameActive;
         systems.forEach(ECS_System::toggleRun);
-        if(minigameActive) {
+        if (minigameActive) {
             minigame.startNewGame(chest);
             minigame.showMenu();
         } else {
@@ -565,13 +561,12 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         Hero h = (Hero) getHero().get();
         Set<String> activeQuests =
-            h.getMyQuests().stream()
-                .map((s) -> s.getClass().getSimpleName())
-                .collect(Collectors.toSet());
-
+                h.getMyQuests().stream()
+                        .map((s) -> s.getClass().getSimpleName())
+                        .collect(Collectors.toSet());
 
         Random rng = new Random();
-        if(activeQuests.size() == 4) {
+        if (activeQuests.size() == 4) {
             return;
         }
         while (q == null || activeQuests.contains(q.getClass().getSimpleName())) {

@@ -2,9 +2,7 @@ package quests;
 
 import starter.Game;
 
-/**
- * Klasse für Quests die das Sammeln von Items beinhaltet
- */
+/** Klasse für Quests die das Sammeln von Items beinhaltet */
 public class CollectItemsQuest extends Quest {
 
     private int curAmount;
@@ -12,6 +10,7 @@ public class CollectItemsQuest extends Quest {
 
     /**
      * Konstruktor für die Klasse CollectItemsQuest
+     *
      * @param amount ANzahl an Items die man sammeln muss
      */
     public CollectItemsQuest(int amount) {
@@ -28,8 +27,8 @@ public class CollectItemsQuest extends Quest {
     }
 
     /**
-     * Wird aufgerufen wenn ein Item aufgesammelt wird
-     * Erhöht den Zähler um 1 und updated die Questanzeige
+     * Wird aufgerufen wenn ein Item aufgesammelt wird Erhöht den Zähler um 1 und updated die
+     * Questanzeige
      */
     public void collectItem() {
         this.curAmount++;

@@ -58,48 +58,48 @@ public class Chest extends Entity {
                         new Animation(DEFAULT_OPENING_ANIMATION_FRAMES, 10, false));
 
         Random rng = new Random();
-        if(rng.nextInt(0,2) == 0) {
+        if (rng.nextInt(0, 2) == 0) {
             locked = true;
         }
-
     }
 
     /**
      * Dropt die Items in der Kiste, wenn sie nicht verschlossen ist
+     *
      * @param entity
      */
     public void dropItems(Entity entity) {
-        if(locked) {
+        if (locked) {
             Game.toggleMinigame(this);
         } else {
             InventoryComponent inventoryComponent =
-                entity.getComponent(InventoryComponent.class)
-                    .map(InventoryComponent.class::cast)
-                    .orElseThrow(
-                        () ->
-                            createMissingComponentException(
-                                InventoryComponent.class.getName(), entity));
+                    entity.getComponent(InventoryComponent.class)
+                            .map(InventoryComponent.class::cast)
+                            .orElseThrow(
+                                    () ->
+                                            createMissingComponentException(
+                                                    InventoryComponent.class.getName(), entity));
             PositionComponent positionComponent =
-                entity.getComponent(PositionComponent.class)
-                    .map(PositionComponent.class::cast)
-                    .orElseThrow(
-                        () ->
-                            createMissingComponentException(
-                                PositionComponent.class.getName(), entity));
+                    entity.getComponent(PositionComponent.class)
+                            .map(PositionComponent.class::cast)
+                            .orElseThrow(
+                                    () ->
+                                            createMissingComponentException(
+                                                    PositionComponent.class.getName(), entity));
             List<ItemData> itemData = inventoryComponent.getItems();
             double count = itemData.size();
 
             IntStream.range(0, itemData.size())
-                .forEach(
-                    index ->
-                        itemData.get(index)
-                            .triggerDrop(
-                                entity,
-                                calculateDropPosition(
-                                    positionComponent, index / count)));
+                    .forEach(
+                            index ->
+                                    itemData.get(index)
+                                            .triggerDrop(
+                                                    entity,
+                                                    calculateDropPosition(
+                                                            positionComponent, index / count)));
             entity.getComponent(AnimationComponent.class)
-                .map(AnimationComponent.class::cast)
-                .ifPresent(x -> x.setCurrentAnimation(x.getIdleRight()));
+                    .map(AnimationComponent.class::cast)
+                    .ifPresent(x -> x.setCurrentAnimation(x.getIdleRight()));
         }
     }
 

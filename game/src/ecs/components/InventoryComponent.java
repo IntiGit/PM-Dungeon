@@ -48,13 +48,13 @@ public class InventoryComponent extends Component {
                         + entity.getClass().getSimpleName()
                         + "'.");
         boolean wasAdded = inventory.add(itemData);
-        if(wasAdded && getEntity() instanceof Hero) {
+        if (wasAdded && getEntity() instanceof Hero) {
             Hero h = (Hero) Game.getHero().get();
-            for(Quest q : h.getMyQuests()) {
-                if(q instanceof FillInventoryQuest fiQ) {
+            for (Quest q : h.getMyQuests()) {
+                if (q instanceof FillInventoryQuest fiQ) {
                     fiQ.setInventoryComponent(this);
                 }
-                if(q instanceof CollectItemsQuest ciQ) {
+                if (q instanceof CollectItemsQuest ciQ) {
                     ciQ.collectItem();
                 }
             }

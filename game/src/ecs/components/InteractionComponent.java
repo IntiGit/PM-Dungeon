@@ -38,7 +38,7 @@ public class InteractionComponent extends Component {
     /** triggers the interaction between hero and the Entity of the component */
     public void triggerInteraction() {
         onInteraction.onInteraction(entity);
-        if( !( entity instanceof Chest c && c.getLocked() ) ) {
+        if (!(entity instanceof Chest c && c.getLocked())) {
             if (!repeatable) entity.removeComponent(InteractionComponent.class);
         }
     }

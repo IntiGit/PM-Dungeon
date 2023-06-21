@@ -82,7 +82,7 @@ public class Inventaranzeige<T extends Actor> extends ScreenController<T> implem
     }
 
     private void createBackground() {
-        for(int i = 1; i < 11; i++ ) {
+        for (int i = 1; i < 11; i++) {
             ScreenImage bg = new ScreenImage("hud/InventoryBackground.png", new Point(0, 0));
             bg.setSize(32, 32);
             bg.setPosition(bg.getWidth() * 2 * (i - 1), bg.getHeight());

@@ -7,12 +7,14 @@ import ecs.components.xp.XPComponent;
 import ecs.entities.Entity;
 import ecs.entities.Hero;
 import graphic.Animation;
+import java.util.logging.Logger;
 import level.elements.tile.Tile;
 import starter.Game;
 
 /** Klasse die die Falle Loch darstellt */
 public class Loch extends Falle {
 
+    private Logger lochLogger = Logger.getLogger(this.getClass().getName());
     /**
      * Konstruktor für die Klasse Loch
      *
@@ -86,14 +88,13 @@ public class Loch extends Falle {
                 sc.getSkillSet().removeIf(s -> s.getSkillID() == 3);
                 ((Hero) b).notifyObservers();
             }
-            System.out.println("Abgestiegen zu Level " + xpc.getCurrentLevel());
+            lochLogger.info("Abgestiegen zu Level " + xpc.getCurrentLevel());
 
             HealthComponent hc =
                     (HealthComponent) b.getComponent(HealthComponent.class).orElseThrow();
             hc.setMaximalHealthpoints(
                     hc.getMaximalHealthpoints() - (int) (lvl - xpc.getCurrentLevel()));
-            System.out.println(
-                    "maximale Lebenspunkte verringert zu " + hc.getMaximalHealthpoints());
+            lochLogger.info("maximale Lebenspunkte verringert zu " + hc.getMaximalHealthpoints());
 
             Game.removeEntity(a);
         }
