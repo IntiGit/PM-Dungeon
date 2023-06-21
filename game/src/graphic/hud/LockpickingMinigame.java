@@ -27,9 +27,9 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     private final Logger minigameLogger = Logger.getLogger(this.getClass().getName());
 
     private ScreenImage[][] picture;
-    /*      { [1][2][3] }       oben  = j-1  unten  = j+1
-     *      { [4][5][6] }       links = i-1  rechts = i+1
-     *      { [7][8][_] }
+    /*      { [1][2][_] }       oben  = j-1  unten  = j+1
+     *      { [3][4][5] }       links = i-1  rechts = i+1
+     *      { [6][7][8] }
      */
 
     private ScreenImage[][] solved;
@@ -42,6 +42,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
     private int emptyY;
 
     private Random rng = new Random();
+
+    List<String> picturePath;
 
     public LockpickingMinigame() {
         this(new SpriteBatch());
@@ -66,8 +68,8 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         hasStarted = true;
         completed = false;
         emptyX = 2;
-        emptyY = 2;
-        List<String> picturePath = MinigamePicturePaths.getRandomPicture();
+        emptyY = 0;
+        picturePath = MinigamePicturePaths.getRandomPicture();
         for(int i = 0; i < 3; i++) {
             for(int j = 0; j < 3; j++) {
                 picture[j][i] = new ScreenImage(picturePath.get(i * 3 + j), new Point(0, 0));
@@ -92,7 +94,7 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         for(int i = 0; i < iterations; i++) {
             findAndDoRandomSwap();
         }
-        if(emptyX == 2 && emptyY == 2) {
+        if(emptyX == 2 && emptyY == 0) {
             findAndDoRandomSwap();
         }
     }
@@ -205,7 +207,12 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
                 for (int j = 0; j < 3; j++) {
                     ScreenImage si = picture[j][i];
                     if (si != null) {
-                        si.setScale(4);
+                        if(picturePath.get(0).equals("minigame/testPuzzel/1.png")) {
+                            si.setScale(4);
+                        } else {
+                            si.setScale(1);
+                        }
+
                         si.setPosition(
                             Constants.WINDOW_WIDTH / 4 + (j + 1) * si.getWidth() * si.getScaleX(),
                             Constants.WINDOW_HEIGHT / 1.5f - (i + 1) * si.getHeight() * si.getScaleY(),
