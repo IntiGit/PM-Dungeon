@@ -9,7 +9,7 @@ import starter.Game;
 
 public class QuestMaster extends Entity implements IInteraction {
 
-    private final String pathToTexture = "animation/missingTexture.png";
+    private final String pathToTexture = "character/questMaster/questmaster.png";
     private Quest quest;
 
     public QuestMaster(Quest questToGive) {

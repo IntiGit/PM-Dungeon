@@ -7,9 +7,13 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Align;
 import controller.ScreenController;
 import ecs.components.InteractionComponent;
+import ecs.components.InventoryComponent;
 import ecs.components.skill.SkillTools;
 import ecs.entities.Chest;
 import ecs.entities.Entity;
+import ecs.entities.Hero;
+import ecs.items.ItemData;
+import ecs.items.Schluessel;
 import graphic.hud.statDisplay.IHudElement;
 import starter.Game;
 import tools.Constants;
@@ -73,6 +77,14 @@ public class LockpickingMinigame<T extends Actor> extends ScreenController<T> im
         shuffle();
         minigameLogger.info("Bring die einzelnen Teile wieder in die richtige Reihenfolge \n" +
                             "Du kannst ein Teil durch anklicken auf das leere Feld verschieben");
+        Hero h = (Hero) Game.getHero().get();
+        InventoryComponent ic = (InventoryComponent) h.getComponent(InventoryComponent.class).orElseThrow();
+        for(ItemData i : ic.getItems()){
+            if(i instanceof Schluessel){
+                ic.removeItem(i);
+                picture = solved;
+            }
+        }
     }
 
     private void shuffle() {
