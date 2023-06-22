@@ -1,5 +1,6 @@
 package ecs.components;
 
+import ecs.entities.Chest;
 import ecs.entities.Entity;
 
 public class InteractionComponent extends Component {
@@ -37,7 +38,9 @@ public class InteractionComponent extends Component {
     /** triggers the interaction between hero and the Entity of the component */
     public void triggerInteraction() {
         onInteraction.onInteraction(entity);
-        if (!repeatable) entity.removeComponent(InteractionComponent.class);
+        if (!(entity instanceof Chest c && c.getLocked())) {
+            if (!repeatable) entity.removeComponent(InteractionComponent.class);
+        }
     }
 
     /**

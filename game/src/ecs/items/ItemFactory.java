@@ -90,7 +90,13 @@ public class ItemFactory {
                             "Schuh Tasche",
                             "Tasche zum Tragen von Schuhen",
                             Schuhe.class,
-                            3));
+                            3),
+                    new Schluessel(
+                            ItemType.Basic,
+                            new Animation(List.of("itemTextures/keys/key.png"), 1),
+                            new Animation(List.of("itemTextures/keys/key.png"), 1),
+                            "Schlüssel",
+                            "Kann zum öffnen von Truhen verwendet werden"));
 
     private Set<String> types = Set.of("Waffe", "Trank", "Schuhe", "Tasche");
 

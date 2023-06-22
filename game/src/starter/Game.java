@@ -15,14 +15,8 @@ import controller.SystemController;
 import ecs.components.MissingComponentException;
 import ecs.components.PositionComponent;
 import ecs.components.xp.XPComponent;
-import ecs.entities.Entity;
-import ecs.entities.Geist;
-import ecs.entities.Grabstein;
-import ecs.entities.Hero;
-import ecs.entities.monsters.ChestMonster;
-import ecs.entities.monsters.Daemon;
-import ecs.entities.monsters.Necromancer;
-import ecs.entities.monsters.Skelett;
+import ecs.entities.*;
+import ecs.entities.monsters.*;
 import ecs.entities.traps.Loch;
 import ecs.entities.traps.Schleim;
 import ecs.items.*;
@@ -30,11 +24,14 @@ import ecs.systems.*;
 import graphic.DungeonCamera;
 import graphic.Painter;
 import graphic.hud.GameOverMenu;
+import graphic.hud.LockpickingMinigame;
 import graphic.hud.PauseMenu;
+import graphic.hud.Questanzeige;
 import graphic.hud.statDisplay.*;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import level.IOnLevelLoader;
 import level.LevelAPI;
 import level.elements.ILevel;
@@ -43,6 +40,7 @@ import level.generator.IGenerator;
 import level.generator.postGeneration.WallGenerator;
 import level.generator.randomwalk.RandomWalkGenerator;
 import level.tools.LevelSize;
+import quests.*;
 import tools.Constants;
 import tools.Point;
 
@@ -76,6 +74,10 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     /** Variable um anzuzeigen ob gerade eine Tasche offen ist */
     public static boolean bagOpen = false;
 
+    public static boolean questScreenOpen = false;
+
+    private static boolean minigameActive = false;
+
     /** All entities that are currently active in the dungeon */
     private static final Set<Entity> entities = new HashSet<>();
     /** All entities to be removed from the dungeon in the next frame */
@@ -94,6 +96,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     private static Levelanzeige<Actor> levelanzeige;
     private static Skillanzeige<Actor> skillanzeige;
     private static Inventaranzeige<Actor> inventaranzeige;
+    public static Questanzeige<Actor> questanzeige;
+    public static LockpickingMinigame<Actor> minigame;
 
     public static ILevel currentLevel;
     private static Entity hero;
@@ -104,6 +108,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
     public static boolean hasGhost = false;
     private int levelCount = 0;
+    private boolean levelJustLoaded = false;
 
     public static ItemFactory itemFactory = new ItemFactory();
 
@@ -158,6 +163,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         levelanzeige = new Levelanzeige<>();
         skillanzeige = new Skillanzeige<>();
         inventaranzeige = new Inventaranzeige<>();
+        questanzeige = new Questanzeige<>();
+        minigame = new LockpickingMinigame<>();
 
         controller.add(pauseMenu);
         controller.add(gameover);
@@ -166,6 +173,8 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         controller.add(levelanzeige);
         controller.add(skillanzeige);
         controller.add(inventaranzeige);
+        controller.add(questanzeige);
+        controller.add(minigame);
 
         if (hero instanceof Hero h) {
             h.register(lebensanzeige);
@@ -173,6 +182,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             h.register(skillanzeige);
             h.register(inventaranzeige);
             h.notifyObservers();
+            questanzeige.update(h);
         }
     }
 
@@ -181,9 +191,17 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         setCameraFocus();
         manageEntitiesSets();
         monsterLebensanzeige.update(hero);
+        minigame.update(hero);
         getHero().ifPresent(this::loadNextLevelIfEntityIsOnEndTile);
+        if (minigame.gameIsCompleted()) {
+            if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) toggleMinigame(null);
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE) && minigameActive) {
+            toggleMinigame(null);
+        }
+        if (Gdx.input.isButtonJustPressed(Input.Buttons.LEFT)) minigame.getTileClickedOn();
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) togglePause();
-        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get())) toggleInventory();
+        if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_OPEN.get()) && !minigameActive)
+            toggleInventory();
         if (inventoryOpen && bagOpen) {
             if (Gdx.input.isKeyJustPressed(KeyboardConfig.INVENTORY_NAVIGATE_UP.get())) {
                 inventaranzeige.selectNextItemVertical();
@@ -221,10 +239,21 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             }
             levelAPI.loadLevel(LEVELSIZE);
         }
+        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.X)) {
+            questScreenOpen = false;
+            questanzeige.clearAcceptDenyText();
+            systems.forEach(ECS_System::toggleRun);
+        }
+        if (questScreenOpen && Gdx.input.isKeyJustPressed(Input.Keys.U)) {
+            questScreenOpen = false;
+            questanzeige.acceptQuest();
+            systems.forEach(ECS_System::toggleRun);
+        }
     }
 
     @Override
     public void onLevelLoad() {
+        levelJustLoaded = true;
         levelCount++;
         currentLevel = levelAPI.getCurrentLevel();
         entities.clear();
@@ -239,6 +268,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
 
         if (levelCount % 5 == 0) {
             hasGhost = true;
+            generateQuestMaster();
         } else {
             hasGhost = false;
         }
@@ -251,6 +281,18 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
     }
 
     private void manageEntitiesSets() {
+        for (Entity e : entitiesToRemove) {
+            if (e instanceof Monster m) {
+                Hero h = (Hero) getHero().get();
+                List<Quest> heroQuests = h.getMyQuests();
+                for (Quest q : heroQuests) {
+                    if (q instanceof KillMonsterQuest kmQ) {
+                        kmQ.addToKillcount(m);
+                    }
+                }
+            }
+        }
+
         entities.removeAll(entitiesToRemove);
         entities.addAll(entitiesToAdd);
         for (Entity entity : entitiesToRemove) {
@@ -261,6 +303,17 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         }
         entitiesToRemove.clear();
         entitiesToAdd.clear();
+
+        if (levelJustLoaded) {
+            Hero h = (Hero) getHero().get();
+            List<Quest> heroQuests = h.getMyQuests();
+            for (Quest q : heroQuests) {
+                if (q instanceof KillAllMonstersQuest kamQ) {
+                    kamQ.setAmountToKill();
+                }
+            }
+            levelJustLoaded = false;
+        }
     }
 
     private void setCameraFocus() {
@@ -334,6 +387,18 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             skillanzeige.showMenu();
 
             inventaranzeige.hideMenu();
+        }
+    }
+
+    public static void toggleMinigame(Chest chest) {
+        minigameActive = !minigameActive;
+        systems.forEach(ECS_System::toggleRun);
+        if (minigameActive) {
+            minigame.startNewGame(chest);
+            minigame.showMenu();
+        } else {
+            minigame.endGame();
+            minigame.hideMenu();
         }
     }
 
@@ -427,6 +492,7 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
         new XPSystem();
         new SkillSystem();
         new ProjectileSystem();
+        new QuestSystem();
     }
 
     private void generateMonsters() {
@@ -488,5 +554,37 @@ public class Game extends ScreenAdapter implements IOnLevelLoader {
             entities.add(WorldItemBuilder.buildWorldItem(item));
             amount--;
         }
+    }
+
+    private void generateQuestMaster() {
+        Quest q = null;
+
+        Hero h = (Hero) getHero().get();
+        Set<String> activeQuests =
+                h.getMyQuests().stream()
+                        .map((s) -> s.getClass().getSimpleName())
+                        .collect(Collectors.toSet());
+
+        Random rng = new Random();
+        if (activeQuests.size() == 4) {
+            return;
+        }
+        while (q == null || activeQuests.contains(q.getClass().getSimpleName())) {
+            switch (rng.nextInt(1, 5)) {
+                case 1 -> {
+                    q = new CollectItemsQuest(3);
+                }
+                case 2 -> {
+                    q = new FillInventoryQuest();
+                }
+                case 3 -> {
+                    q = new KillMonsterQuest(new Daemon(), 3);
+                }
+                case 4 -> {
+                    q = new KillAllMonstersQuest();
+                }
+            }
+        }
+        entities.add(new QuestMaster(q));
     }
 }

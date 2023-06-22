@@ -9,10 +9,12 @@ import ecs.items.Schuhe;
 import ecs.items.Waffe;
 import graphic.Animation;
 import graphic.hud.statDisplay.IHudElement;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
+import quests.FillInventoryQuest;
+import quests.KillAllMonstersQuest;
+import quests.Quest;
+import starter.Game;
 
 /**
  * The Hero is the player character. It's entity in the ECS. This class helps to setup the hero with
@@ -37,6 +39,8 @@ public class Hero extends Entity implements ILevelUp {
     private Schuhe shoes;
 
     private int plusDmg = 1;
+
+    private List<Quest> myQuests = new ArrayList<>();
 
     private Set<IHudElement> observer = new HashSet<>();
 
@@ -107,8 +111,10 @@ public class Hero extends Entity implements ILevelUp {
                         this,
                         10,
                         new OnHeroDeath(),
-                        new Animation(List.of("knight_m_hit_anim_f0.png"), 300),
-                        new Animation(List.of("knight_m_hit_anim_f0.png"), 300));
+                        AnimationBuilder.buildAnimation(
+                                "character/knight/hit/knight_m_hit_anim_f0.png"),
+                        AnimationBuilder.buildAnimation(
+                                "character/knight/hit/knight_m_hit_anim_f0.png"));
 
         hc.setCurrentHealthpoints(hc.getMaximalHealthpoints());
     }
@@ -182,6 +188,55 @@ public class Hero extends Entity implements ILevelUp {
      */
     public void register(IHudElement hudElement) {
         observer.add(hudElement);
+    }
+
+    /**
+     * Gibt dem Helden eine Quest
+     *
+     * @param q Quest die der Held erhalten soll
+     */
+    public void addQuest(Quest q) {
+        myQuests.add(q);
+        if (q instanceof KillAllMonstersQuest kamQ) {
+            kamQ.setAmountToKill();
+        }
+        if (q instanceof FillInventoryQuest fiQ) {
+            InventoryComponent ic =
+                    (InventoryComponent) getComponent(InventoryComponent.class).orElseThrow();
+            fiQ.setInventoryComponent(ic);
+        }
+        Game.questanzeige.update(this);
+    }
+
+    /**
+     * Entfernt eine Quest vom Helden
+     *
+     * @param q Quest die entfernt werden soll
+     */
+    public void removeQuest(Quest q) {
+        myQuests.remove(q);
+        Game.questanzeige.update(this);
+    }
+
+    /**
+     * Getter für die Liste alle Quests des Helden
+     *
+     * @return Liste aller Quests des Helden
+     */
+    public List<Quest> getMyQuests() {
+        return myQuests;
+    }
+
+    /**
+     * Gibt dem Helden die XP für eine abgeschlossene Quest
+     *
+     * @param q Quest die abgeschlossen wurde
+     */
+    public void receiveQuestReward(Quest q) {
+        XPComponent xpc = (XPComponent) getComponent(XPComponent.class).orElseThrow();
+        xpc.addXP(q.getRewardXP());
+        heroLogger.info(
+                "Quest " + q.getDescription() + " abgeschlossen (+" + q.getRewardXP() + " XP)");
     }
 
     /** Banachrichtigt alle Observer des Helden */
